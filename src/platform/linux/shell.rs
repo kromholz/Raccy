@@ -211,6 +211,7 @@ fn spin(frame: Duration, next: &mut Instant) {
     for event in posted {
         dispatch(event);
     }
+    tend_strip();
     if GLIDING.load(Ordering::Relaxed) && ready_for_frame() {
         dispatch(Event::Glide);
     }
@@ -251,6 +252,47 @@ fn follow_seat(wait: &mut Duration) {
 
 // The connection is let go of before the events reach the app: answering one
 // draws him, and that wants it again.
+// On a tiled monitor the tiles reach the bottom, and whatever stands there
+// stands on somebody's work. He asks the layout for a strip along that edge
+// as tall as he is, the way a bar does, and gives it back the moment the
+// ground is free again. Asked once a second: the layout does not change
+// faster than that, and the asking is a trip to the compositor.
+fn tend_strip() {
+    static LAST: Mutex<Option<Instant>> = Mutex::new(None);
+    let mut last = LAST.lock().unwrap_or_else(|e| e.into_inner());
+    if last.is_some_and(|at| at.elapsed() < Duration::from_secs(1)) {
+        return;
+    }
+    *last = Some(Instant::now());
+    drop(last);
+    let body = super::wayland::BODY_LOGICAL.load(Ordering::Relaxed);
+    let Some((output, _)) = wayland().as_ref().and_then(|w| w.state.pet_output()) else { return };
+    let wanted = (body > 0 && desktop::tiles_reach_bottom(&output)).then(|| (output.clone(), body));
+    let held = desktop::STRIP.lock().unwrap_or_else(|e| e.into_inner()).clone();
+    let same = match (&held, &wanted) {
+        (Some((a, ha)), Some((b, hb))) => a == b && (ha - hb).abs() < 8,
+        (None, None) => true,
+        _ => false,
+    };
+    if same {
+        return;
+    }
+    let screen = desktop::screens().into_iter().find(|s| s.name == output);
+    let mut w = wayland();
+    let Some(w) = w.as_mut() else { return };
+    match (&wanted, screen) {
+        (Some((_, height)), Some(screen)) => {
+            w.state.open_strip(&screen, *height);
+            crate::trace::record(|| format!("wayland: strip of {height} along the bottom of {output}, the tiles reach it"));
+        }
+        _ => {
+            w.state.close(super::wayland::Which::Strip);
+            crate::trace::record(|| format!("wayland: strip on {output} given back"));
+        }
+    }
+    *desktop::STRIP.lock().unwrap_or_else(|e| e.into_inner()) = wanted;
+}
+
 fn wait_for_compositor(wait: Duration) -> Vec<Event> {
     let mut held = wayland();
     match held.as_mut() {

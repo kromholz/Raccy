@@ -7,10 +7,13 @@ fn plist() -> PathBuf {
     home().join("Library/LaunchAgents").join(format!("{LABEL}.plist"))
 }
 
-// Where the bundle puts him. A build directory is somewhere he may be run
-// from, never somewhere the login agent should be pointed at.
-pub fn installed_exe() -> PathBuf {
-    PathBuf::from("/Applications/Raccy.app/Contents/MacOS/raccy")
+// The bundle he is running out of, wherever it was dragged to. A build
+// directory is somewhere he may be run from, never somewhere the login agent
+// should be pointed at, so a program outside a bundle gives nothing.
+pub fn installed_exe() -> Option<PathBuf> {
+    let exe = std::env::current_exe().ok()?;
+    let inside = exe.parent()?.file_name()? == "MacOS" && exe.parent()?.parent()?.file_name()? == "Contents";
+    inside.then_some(exe)
 }
 
 // The file on its own is not enough: it names the program to start, and a
@@ -34,7 +37,7 @@ pub fn set(on: bool) -> bool {
         let _ = std::fs::remove_file(&plist);
         return !plist.exists();
     }
-    let exe = installed_exe();
+    let Some(exe) = installed_exe() else { return false };
     let text = format!(
         r#"<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -76,23 +79,6 @@ pub fn end_task() {}
 mod tests {
     use super::*;
 
-    // Switches the agent on, asks launchd whether it took it, and puts the
-    // machine back the way it was found.
-    #[test]
-    #[ignore]
-    fn the_login_agent_goes_on_and_off_live() {
-        let was = enabled();
-        assert!(set(true), "switched on");
-        assert!(enabled(), "and the file is there");
-        let held = command_output("launchctl", &["print", &format!("gui/{}/{LABEL}", unsafe { libc_uid() })]);
-        println!("launchd holds it: {}", held.is_some());
-        assert!(set(false), "switched off");
-        assert!(!enabled(), "and the file is gone");
-        if was {
-            set(true);
-        }
-    }
-
     // An agent whose program has been built away starts nobody, so the switch
     // in his menu must not claim it is on.
     #[test]
@@ -106,10 +92,11 @@ mod tests {
         assert_eq!(program_of("<dict><key>Label</key><string>x</string></dict>"), None, "nothing to start at all");
     }
 
+    // The test binary is not in a bundle, which is the whole point: a build
+    // directory gives nothing to point the agent at.
     #[test]
-    fn the_login_agent_points_at_the_bundle_and_not_at_a_build() {
-        let exe = installed_exe();
-        assert!(exe.starts_with("/Applications/Raccy.app"), "{}", exe.display());
-        assert!(exe.ends_with("Contents/MacOS/raccy"), "{}", exe.display());
+    fn the_login_agent_takes_a_bundle_and_nothing_else() {
+        assert_eq!(installed_exe(), None, "run out of target, so there is no bundle");
+        assert!(!set(true), "and nothing to switch on");
     }
 }

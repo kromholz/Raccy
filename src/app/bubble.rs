@@ -79,7 +79,9 @@ impl App {
         if let Some(p) = &mut self.panel {
             p.panel.qr = qr;
         }
-        self.say(report.line, false);
+        if !report.line.is_empty() {
+            self.say(report.line, false);
+        }
         self.talk.hold();
     }
 

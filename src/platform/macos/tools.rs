@@ -137,6 +137,78 @@ pub fn http_get(url: &str) -> Option<String> {
     (!body.is_empty()).then(|| body.chars().take(1024).collect())
 }
 
+// A Mac hands the name of the network to nobody without location. The asking
+// happens where the tools cannot do it themselves: the window belongs to the
+// system and only the main thread may raise it, so the tool leaves word here
+// and the loop that draws him picks it up.
+pub(super) static WANTS_LOCATION: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+// CoreLocation answers a delegate and nobody else. Without one the question
+// is asked into the void and the window never comes.
+use objc2::rc::Retained;
+use objc2::runtime::{NSObject, NSObjectProtocol, ProtocolObject};
+use objc2::{MainThreadMarker, MainThreadOnly, define_class, msg_send};
+use objc2_core_location::{CLAuthorizationStatus, CLLocationManager, CLLocationManagerDelegate};
+
+define_class!(
+    #[unsafe(super(NSObject))]
+    #[thread_kind = MainThreadOnly]
+    #[name = "RaccyLocation"]
+    struct Asking;
+
+    unsafe impl NSObjectProtocol for Asking {}
+
+    unsafe impl CLLocationManagerDelegate for Asking {
+        #[unsafe(method(locationManagerDidChangeAuthorization:))]
+        fn changed(&self, manager: &CLLocationManager) {
+            let status = unsafe { manager.authorizationStatus() };
+            crate::trace::record(|| format!("location: answered {status:?}"));
+            // Whatever the answer, he is not here for the whereabouts: the
+            // name of the network is the whole of it, and he goes back to
+            // being a thing on the desktop rather than a program in the Dock.
+            if status != CLAuthorizationStatus::NotDetermined {
+                unsafe { manager.stopUpdatingLocation() };
+                if let Some(mtm) = MainThreadMarker::new() {
+                    super::appkit::stand_aside(mtm);
+                }
+            }
+        }
+
+        #[unsafe(method(locationManager:didFailWithError:))]
+        fn failed(&self, _manager: &CLLocationManager, error: &objc2_foundation::NSError) {
+            crate::trace::record(|| format!("location: refused, {}", error.localizedDescription()));
+        }
+    }
+);
+
+// The manager and its delegate have to outlive the asking: one that is let go
+// of takes the question with it and no window ever appears.
+pub(super) fn ask_for_location(mtm: MainThreadMarker) {
+    thread_local! {
+        static HELD: std::cell::OnceCell<(Retained<CLLocationManager>, Retained<Asking>)> = const { std::cell::OnceCell::new() };
+    }
+    HELD.with(|held| {
+        let (manager, _) = held.get_or_init(|| {
+            let manager = unsafe { CLLocationManager::new() };
+            let asking: Retained<Asking> = unsafe { msg_send![Asking::alloc(mtm), init] };
+            unsafe { manager.setDelegate(Some(ProtocolObject::from_ref(&*asking))) };
+            (manager, asking)
+        });
+        let status = unsafe { manager.authorizationStatus() };
+        crate::trace::record(|| format!("location: status {status:?}"));
+        if status == CLAuthorizationStatus::NotDetermined {
+            // The window the system puts up belongs to whoever is in front,
+            // and an accessory is in front of nobody: he steps into the Dock
+            // for as long as the question is open and then steps back.
+            super::appkit::step_forward(mtm);
+            unsafe { manager.requestWhenInUseAuthorization() };
+            // On a Mac the window comes when a program reaches for the
+            // whereabouts, not when it asks politely, so it has to reach.
+            unsafe { manager.startUpdatingLocation() };
+        }
+    });
+}
+
 // The wireless card, as the system itself reports it. The airport tool that
 // used to answer this was taken away, and what is left names the network but
 // never its BSSID, which is the one thing here that asks for location.
@@ -150,16 +222,26 @@ pub fn wifi() -> WifiState {
     // The name of the network is one of the things a Mac keeps back from a
     // program with no location access: it hands over a word saying so in its
     // place, and everything else about the network all the same.
-    if ssid == "<redacted>" {
-        return WifiState::Denied;
-    }
+    // The name goes to the program that holds location, and to that program
+    // only: a child asked on his behalf gets the placeholder all the same.
+    let ssid = match ssid {
+        "<redacted>" => match ssid_in_process() {
+            Some(name) => name,
+            None => {
+                crate::trace::record(|| "wifi: the name is kept back, asking for location".into());
+                WANTS_LOCATION.store(true, std::sync::atomic::Ordering::SeqCst);
+                return WifiState::Denied;
+            }
+        },
+        name => name.to_string(),
+    };
     let (channel, frequency) = channel_of(network["spairport_network_channel"].as_str().unwrap_or_default());
     let rssi = signal_noise(network["spairport_signal_noise"].as_str().unwrap_or_default());
     let rate = network["spairport_network_rate"].as_f64().unwrap_or(0.0).round() as u32;
     let (auth, cipher, secured) = security_of(network["spairport_security_mode"].as_str().unwrap_or_default());
     WifiState::Connected(Wifi {
-        ssid: ssid.to_string(),
-        profile: ssid.to_string(),
+        profile: ssid.clone(),
+        ssid,
         bssid: [0; 6],
         // The same 0 to 100 the other two report, from the strength in dBm.
         signal: rssi.map_or(0, |dbm| ((dbm + 100) * 2).clamp(0, 100) as u32),
@@ -172,6 +254,13 @@ pub fn wifi() -> WifiState {
         cipher,
         secured,
     })
+}
+
+fn ssid_in_process() -> Option<String> {
+    let client = unsafe { objc2_core_wlan::CWWiFiClient::sharedWiFiClient() };
+    let interface = unsafe { client.interface() }?;
+    let ssid = unsafe { interface.ssid() }?;
+    Some(ssid.to_string())
 }
 
 // `149 (5GHz, 80MHz)`: the channel, and which band it is on, which is what
@@ -204,15 +293,34 @@ fn security_of(mode: &str) -> (i32, i32, bool) {
     }
 }
 
-// The key is in the keychain, which hands nothing over without the person at
-// the machine saying so in a window of its own. That it is there and under
-// lock is the whole answer, and the report says as much.
+// The key is in the keychain, which hands it over only once the person at the
+// machine has said so in a window of its own. Asking is the right way round:
+// they are the one sharing their network, and nothing here can say yes for
+// them. A refusal reads the same as a key that is not there.
 pub fn wifi_profile_xml(profile: &str) -> Option<String> {
-    let looked = |keychain: &str| command_output("security", &["find-generic-password", "-s", "AirPort", "-a", profile, keychain]).is_some();
-    // The one the system joined on its own is in the machine's keychain, the
-    // one this person joined in theirs.
-    let there = looked("/Library/Keychains/System.keychain") || command_output("security", &["find-generic-password", "-s", "AirPort", "-a", profile]).is_some();
-    there.then(|| "<sharedKey><keyType>passPhrase</keyType><protected>true</protected><keyMaterial>*</keyMaterial></sharedKey>".to_string())
+    const SYSTEM: &str = "/Library/Keychains/System.keychain";
+    let security = |keychain: Option<&str>, secret: bool| {
+        let mut args = vec!["find-generic-password", "-s", "AirPort", "-a", profile];
+        if secret {
+            args.push("-w");
+        }
+        args.extend(keychain);
+        command_output("security", &args).map(|out| out.trim().to_string())
+    };
+    // Whether it is there is answered without a window; only the key itself
+    // costs one. The one this person joined is in their keychain, one the
+    // machine joined for everybody in the machine's, and the window is put
+    // up once, for whichever has it, rather than again for the other after
+    // a no.
+    let keychain = [None, Some(SYSTEM)].into_iter().find(|kc| security(*kc, false).is_some())?;
+    Some(match security(keychain, true).filter(|key| !key.is_empty()) {
+        Some(key) => format!("<sharedKey><keyType>passPhrase</keyType><protected>false</protected><keyMaterial>{}</keyMaterial></sharedKey>", xml_escape(&key)),
+        None => "<sharedKey><keyType>passPhrase</keyType><protected>true</protected><keyMaterial>*</keyMaterial></sharedKey>".to_string(),
+    })
+}
+
+fn xml_escape(s: &str) -> String {
+    s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
 }
 
 // One ARP request: a packet nudged at the address makes the kernel ask,

@@ -968,7 +968,7 @@ Vnc = [
 FileShare = [
   "Sdílení souborů poslouchá na portu {port}. Doma dobrý, v kavárně ne",
   "Port {port}, sdílení souborů. Na domácí síti v pohodě, na cizí wifi zavřít",
-  "Windows sdílí soubory na portu {port}. Sousedi v síti vidí dveře",
+  "Sdílení souborů poslouchá na portu {port}. Sousedi v síti vidí dveře",
 ]
 Telnet = [
   "Telnet poslouchá na portu {port}. To je jak nechat klíče v zámku",
@@ -1031,6 +1031,46 @@ beacon = [
   "{who} se hlásí na {dest} každejch {every} s. Jak podmínečně propuštěnej na strážnici",
   "Každejch {every} s letí z {who} zpráva na {dest}. Někdo chce vědět, že žiješ",
 ]
+autorun_run_mac = [
+  "Novej nájemník mezi položkami po přihlášení: {name}. Naskočí, jak se přihlásíš",
+  "{name} se zapsal mezi přihlašovací položky, pojede při každým přihlášení. Instaloval sis něco?",
+  "Do položek po přihlášení se nastěhoval {name}. Jestli ho neznáš, koukni, kdo ho tam dal",
+]
+autorun_run_linux = [
+  "Novej nájemník v autostartu: {name}. Naskočí s každým přihlášením, víš o něm?",
+  "{name} si položil .desktop do autostartu, pojede při každým přihlášení. Instaloval sis něco?",
+  "Do autostartu se nastěhoval {name}. Jestli ho neznáš, koukni, kdo ho tam dal",
+]
+autorun_startup_mac = [
+  "Objevil se novej launch agent {name}. Launchd ho pustí s každým přihlášením",
+  "{name} si zalezl mezi launch agenty. Tvoje práce?",
+  "Novej krám v LaunchAgents: {name}. Víš o něm?",
+]
+autorun_startup_linux = [
+  "V configu kompozitoru přibyl exec {name}. Pustí se s každým sezením",
+  "{name} si přidal exec do configu kompozitoru. Tvoje práce?",
+  "Novej řádek exec v configu: {name}. Víš o něm?",
+]
+autorun_service_mac = [
+  "Novej démon {name} startuje sám se strojem. Instalačka, nebo nezvanej host?",
+  "{name} se usadil jako launch daemon, běží i když nikdo není přihlášenej. Jestli sis nic neinstaloval, zbystři",
+  "Novej nájemník v LaunchDaemons: {name}. Běží nad všema účtama",
+]
+autorun_service_linux = [
+  "Nová služba {name} je zapnutá v systemd. Instalačka, nebo nezvanej host?",
+  "{name} se usadil jako systemd jednotka, co naskočí sama. Jestli sis nic neinstaloval, zbystři",
+  "Novej nájemník mezi jednotkami: {name}. Běží, i když nikdo není přihlášenej",
+]
+autorun_task_mac = [
+  "Launchd drží novou úlohu {name}. Takhle se usazujou i škůdci, koukni, kdo ji založil",
+  "{name} si u launchd zařídil, že se bude vracet. Updater, nebo někdo vytrvalej?",
+  "V launchd se objevila úloha {name}. Víš, odkud je?",
+]
+autorun_task_linux = [
+  "Novej časovač {name}. Takhle se usazujou i škůdci, koukni, kdo ho založil",
+  "{name} si založil timer nebo cron. Updater, nebo někdo, kdo se chce vracet?",
+  "V systemd nebo cronu se objevila úloha {name}. Víš, odkud je?",
+]
 # Skenování lanu. {who} {hosts} kolik strojů, {ports} kolik portů
 sweep_hosts = [
   "{who} obešel {hosts} mašin v lanu za minutu. To je skenování",
@@ -1089,9 +1129,9 @@ random_label = [
   "{name}, {who}. Takový jména si vymejšlej stroje, ne lidi",
   "{who} volá {name}. Náhodný písmenka, malware nebo cdn",
 ]
-# DNS mimo Windows. {who} {dest}
+# DNS mimo resolver systému. {who} {dest}
 dns_bypass = [
-  "{who} se ptá na dns rovnou {dest}, kolem windows. Jde na to bokem",
+  "{who} se ptá na dns rovnou {dest}, kolem systému. Jde na to bokem",
   "{who} si hledá adresy u {dest}, mimo systém. Vlastní telefonní seznam",
   "Dns bokem, {who} na {dest}. Buď šifrovanej dns, nebo se něco schovává",
 ]
@@ -1172,7 +1212,7 @@ hosts_more = [
 # Nastavená proxy. {host} přes co to teď jede
 proxy_set = [
   "Provoz z prohlížeče teď jede přes proxy {host}. Jestli sis ji nenastavil ty, někdo ti čte přes rameno",
-  "Windows maj novou proxy: {host}. Všechno poteče přes ni. Tvoje práce?",
+  "Je nastavená nová proxy: {host}. Všechno poteče přes ni. Tvoje práce?",
   "Proxy nastavená na {host}. Prostředník mezi tebou a internetem, víš o něm?",
 ]
 # Na stejný síti se změnily dns servery. {name} adaptér, {ip} nový servery
@@ -1412,7 +1452,9 @@ route_to = "trasa k"
 # Delší vysvětlení v oknech nářadí. \n je konec řádku.
 weak_security = "Slabé zabezpečení: přepni router na WPA2 nebo WPA3, a dokud to nejde, posílej citlivý věci jen přes VPN."
 location_needed = "Windows 11 prozradí jméno a parametry wifi jen aplikacím s přístupem k poloze.\n\nPovol ho: Nastavení > Soukromí a zabezpečení > Poloha > zapnout Služby určování polohy\na Povolit desktopovým aplikacím přístup k poloze. Raccy polohu nečte, jen tím Windows odemknou wifi."
+location_needed_here = "Systém prozradí jméno a parametry wifi jen aplikacím, které mají přístup k poloze.\n\nPovol ho: Nastavení systému > Soukromí a zabezpečení > Služby určování polohy > zapnout u Raccyho.\nRaccy polohu nečte, jen tím systém odemkne jméno sítě."
 no_sizes = "Bez správce Windows neřeknou, kolik žere kterej program.\nUkazuju, kdo má teď nejvíc otevřenejch spojení:"
+no_sizes_here = "Bez správce se nedá říct, kolik žere kterej program.\nUkazuju, kdo má teď nejvíc otevřenejch spojení:"
 [network]
 # {ip} veřejná adresa
 public = [
@@ -1425,7 +1467,6 @@ none = "Veřejnou IP sem nevyčmuchal, svět venku mlčí. Zbytek je v okně"
 # {ssid} {security} zabezpečení, {signal} síla v procentech
 weak = "Wifi {ssid} jede na {security}. To přečte každej soused s trochou snahy"
 fine = "Wifi {ssid}, signál {signal} %, {security}. Drží"
-denied = "Windows mi neřeknou jméno wifi, dokud nepovolíš polohu. Jak na to, je v okně"
 off = "Na wifi teď nejsi. Drát je drát"
 none = "Wifi tu nemáš. Poctivej drát, respekt"
 
@@ -1434,8 +1475,10 @@ none = "Wifi tu nemáš. Poctivej drát, respekt"
 Shared = "Naskenuj to telefonem a seš na {ssid}. Klik a heslo máš ve schránce"
 Open = "{ssid} je otevřená, heslo nemá. Kód stejně ušetří ťukání"
 NeedsAdmin = "Heslo od {ssid} mi windows vydaj jen jako správci. Pusť mě jako správce z menu"
+NeedsAdminHere = "Heslo od {ssid} má Mac v klíčence a vydá ho, jen když mu to potvrdíš svým heslem. Stejně se ptá i Nastavení systému. Zkus to znovu a potvrď"
 Enterprise = "{ssid} je firemní síť, každej se hlásí vlastním účtem. Tady není co sdílet"
 Unknown = "Profil od {ssid} nepřečtu. Windows mlčí ¯\\_(ツ)_/¯"
+UnknownHere = "Profil od {ssid} nepřečtu. Systém mlčí ¯\\_(ツ)_/¯"
 
 [neighbours]
 none = "Nevidím žádnou místní síť, co by šla oťukat"

@@ -237,6 +237,20 @@ fn with<R>(which: Which, off_main: R, f: impl FnOnce(&mut Pane, MainThreadMarker
     })
 }
 
+// A window the system puts up on a program's behalf goes to whoever is in
+// front, and an accessory is in front of nobody: it would be raised for
+// somebody else or not at all.
+pub fn step_forward(mtm: MainThreadMarker) {
+    let app = NSApplication::sharedApplication(mtm);
+    app.setActivationPolicy(NSApplicationActivationPolicy::Regular);
+    #[allow(deprecated)]
+    app.activateIgnoringOtherApps(true);
+}
+
+pub fn stand_aside(mtm: MainThreadMarker) {
+    NSApplication::sharedApplication(mtm).setActivationPolicy(NSApplicationActivationPolicy::Accessory);
+}
+
 pub fn start() {
     let Some(mtm) = MainThreadMarker::new() else { return };
     let app = NSApplication::sharedApplication(mtm);

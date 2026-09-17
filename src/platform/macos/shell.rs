@@ -146,6 +146,13 @@ fn spin(frame: Duration, next: &mut Instant) {
     if system::ending() && !QUIT.swap(true, Ordering::SeqCst) {
         dispatch(Event::EndSession);
     }
+    // A tool asked for the network's name and the system kept it back: the
+    // window that puts that right is the main thread's to raise.
+    if super::tools::WANTS_LOCATION.swap(false, Ordering::SeqCst)
+        && let Some(mtm) = objc2::MainThreadMarker::new()
+    {
+        super::tools::ask_for_location(mtm);
+    }
     let wait = next.saturating_duration_since(Instant::now()).min(frame);
     appkit::pump(if GLIDING.load(Ordering::Relaxed) { wait.min(GLIDE_STEP) } else { wait });
     let posted: Vec<Event> = POSTED.lock().unwrap_or_else(|e| e.into_inner()).drain(..).collect();

@@ -21,9 +21,9 @@ const TASK: &str = "Raccy";
 
 // Where the package puts him.
 #[cfg_attr(not(test), allow(dead_code))]
-pub fn installed_exe() -> PathBuf {
+pub fn installed_exe() -> Option<PathBuf> {
     let base = std::env::var_os("ProgramW6432").or_else(|| std::env::var_os("ProgramFiles")).map(PathBuf::from);
-    base.unwrap_or_else(|| PathBuf::from(r"C:\Program Files")).join("Raccy").join("raccy.exe")
+    Some(base.unwrap_or_else(|| PathBuf::from(r"C:\Program Files")).join("Raccy").join("raccy.exe"))
 }
 
 pub fn enabled() -> bool {
@@ -127,7 +127,7 @@ mod tests {
 
     #[test]
     fn he_is_looked_for_where_the_package_puts_him() {
-        let exe = installed_exe();
+        let exe = installed_exe().expect("a place he is installed");
         assert!(exe.ends_with(r"Raccy\raccy.exe"), "{}", exe.display());
         let program_files = std::env::var_os("ProgramW6432").or_else(|| std::env::var_os("ProgramFiles")).map(PathBuf::from);
         assert!(program_files.is_none_or(|p| exe.starts_with(p)), "{}", exe.display());
@@ -170,7 +170,7 @@ mod tests {
     #[test]
     #[ignore]
     fn the_logon_task_says_whether_it_is_on() {
-        println!("installed at {}", installed_exe().display());
+        println!("installed at {:?}", installed_exe());
         println!("task enabled: {:?}", task_enabled());
     }
 }

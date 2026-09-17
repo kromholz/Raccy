@@ -973,7 +973,7 @@ Vnc = [
 FileShare = [
   "File sharing listens on port {port}. Fine at home, not in a cafe",
   "Port {port}, file sharing. Fine on your own network, close it on strange wifi",
-  "Windows shares files on port {port}. The neighbours on the network can see the door",
+  "File sharing is listening on port {port}. The neighbours on the network can see the door",
 ]
 Telnet = [
   "Telnet listens on port {port}. Keys left in the lock",
@@ -1036,6 +1036,46 @@ beacon = [
   "{who} checks in with {dest} every {every} s, like a parolee at the police station",
   "Every {every} s {who} sends word to {dest}. Someone wants to know you're alive",
 ]
+autorun_run_mac = [
+  "A new tenant among the login items: {name}. It comes up as you sign in",
+  "{name} wrote itself into your login items, it will run at every sign-in. Did you install something?",
+  "{name} moved into the login items. If you do not know it, look at who put it there",
+]
+autorun_run_linux = [
+  "A new tenant in autostart: {name}. It comes up at every sign-in, do you know it?",
+  "{name} dropped a .desktop into autostart, it will run at every sign-in. Did you install something?",
+  "{name} moved into autostart. If you do not know it, look at who put it there",
+]
+autorun_startup_mac = [
+  "A new launch agent turned up: {name}. Launchd will start it at every sign-in",
+  "{name} tucked itself in among the launch agents. Your doing?",
+  "New junk in LaunchAgents: {name}. Do you know it?",
+]
+autorun_startup_linux = [
+  "A new exec in the compositor config: {name}. It starts with every session",
+  "{name} added an exec to the compositor config. Your doing?",
+  "A new exec line in the config: {name}. Do you know it?",
+]
+autorun_service_mac = [
+  "A new daemon, {name}, starts on its own with the machine. An installer, or an uninvited guest?",
+  "{name} settled in as a launch daemon, it runs with nobody signed in. If you installed nothing, look twice",
+  "A new tenant in LaunchDaemons: {name}. It runs above every account",
+]
+autorun_service_linux = [
+  "A new service, {name}, is enabled in systemd. An installer, or an uninvited guest?",
+  "{name} settled in as a systemd unit that starts on its own. If you installed nothing, look twice",
+  "A new tenant among the units: {name}. It runs with nobody signed in",
+]
+autorun_task_mac = [
+  "Launchd is holding a new job, {name}. This is how pests settle in too, look at who made it",
+  "{name} arranged with launchd to keep coming back. An updater, or somebody persistent?",
+  "A new job turned up in launchd: {name}. Do you know where it is from?",
+]
+autorun_task_linux = [
+  "A new timer, {name}. This is how pests settle in too, look at who made it",
+  "{name} set itself a timer or a cron line. An updater, or somebody who wants to come back?",
+  "A new job turned up in systemd or cron: {name}. Do you know where it is from?",
+]
 # A scan of the LAN. {who} {hosts} machines, {ports} ports
 sweep_hosts = [
   "{who} visited {hosts} machines on the LAN in a minute. That's a scan",
@@ -1094,9 +1134,9 @@ random_label = [
   "{name}, {who}. Machines make up names like that, not people",
   "{who} calls {name}. Random letters, malware or a cdn",
 ]
-# DNS around Windows. {who} {dest}
+# DNS around the system's own resolver. {who} {dest}
 dns_bypass = [
-  "{who} asks {dest} for dns directly, around windows. Round the back",
+  "{who} asks {dest} for dns directly, around the system. Round the back",
   "{who} looks up addresses with {dest}, outside the system. Its own phone book",
   "Dns round the back, {who} to {dest}. Either encrypted dns, or something is hiding",
 ]
@@ -1177,7 +1217,7 @@ hosts_more = [
 # A proxy set. {host} what traffic goes through now
 proxy_set = [
   "Browser traffic now goes through the proxy {host}. If you didn't set it, someone's reading over your shoulder",
-  "Windows has a new proxy: {host}. Everything will flow through it. Your doing?",
+  "A new proxy is set: {host}. Everything will flow through it. Your doing?",
   "A proxy set to {host}. A middleman between you and the internet, know about it?",
 ]
 # The dns servers changed on the same network. {name} the adapter, {ip} the new servers
@@ -1415,7 +1455,9 @@ route_to = "route to"
 # Longer explanations in the toolkit's windows. \n ends a line.
 weak_security = "Weak security: switch the router to WPA2 or WPA3, and until then send anything sensitive over a VPN only."
 location_needed = "Windows 11 gives the Wi-Fi name and details only to apps with location access.\n\nAllow it: Settings > Privacy & security > Location > turn on Location services\nand Let desktop apps access your location. Raccy never reads your location; this only unlocks the Wi-Fi details."
+location_needed_here = "The system gives the Wi-Fi name and details only to apps with location access.\n\nAllow it: System Settings > Privacy & Security > Location Services > turn it on for Raccy.\nRaccy never reads your location; this only unlocks the network name."
 no_sizes = "Without admin, Windows won't say how much each program eats.\nHere is who has the most open connections right now:"
+no_sizes_here = "Without admin there is no saying how much each program eats.\nHere is who has the most open connections right now:"
 [network]
 # {ip} the public address
 public = [
@@ -1428,7 +1470,6 @@ none = "Couldn't sniff out your public ip, the outside is silent. The rest is in
 # {ssid} {security} the security, {signal} strength in percent
 weak = "Wifi {ssid} runs on {security}. Any neighbour with a bit of effort can read that"
 fine = "Wifi {ssid}, signal {signal} %, {security}. Solid"
-denied = "Windows won't tell me the wifi name until you allow location. How is in the window"
 off = "You're not on wifi right now. A cable is a cable"
 none = "No wifi here. An honest cable, respect"
 
@@ -1437,8 +1478,10 @@ none = "No wifi here. An honest cable, respect"
 Shared = "Scan it with a phone and you're on {ssid}. Click and the password is on the clipboard"
 Open = "{ssid} is open, no password. The code still saves some typing"
 NeedsAdmin = "Windows hand over the password to {ssid} only to an admin. Run me as admin from the menu"
+NeedsAdminHere = "The Mac keeps the password for {ssid} in the keychain and hands it over only once you confirm with your own password. System Settings asks the same way. Try again and confirm"
 Enterprise = "{ssid} is a company network, everyone signs in with their own account. Nothing to share"
 Unknown = "Can't read the profile for {ssid}. Windows keep quiet ¯\\_(ツ)_/¯"
+UnknownHere = "Can't read the profile for {ssid}. The system keeps quiet ¯\\_(ツ)_/¯"
 
 [neighbours]
 none = "I see no local network to knock on"

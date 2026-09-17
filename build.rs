@@ -8,7 +8,6 @@ fn main() {
     let version = std::env::var("CARGO_PKG_VERSION").unwrap();
     let mut numbers = version.split(['.', '-']).map(|p| p.parse::<u16>().unwrap_or(0));
     let (major, minor, patch) = (numbers.next().unwrap_or(0), numbers.next().unwrap_or(0), numbers.next().unwrap_or(0));
-    let description = std::env::var("CARGO_PKG_DESCRIPTION").unwrap_or_default();
     let rc = format!(
         r#"1 ICON "{icon}"
 
@@ -22,7 +21,7 @@ BEGIN
   BEGIN
     BLOCK "040904B0"
     BEGIN
-      VALUE "FileDescription", "{description}"
+      VALUE "FileDescription", "Raccy"
       VALUE "FileVersion", "{version}"
       VALUE "InternalName", "raccy"
       VALUE "OriginalFilename", "raccy.exe"

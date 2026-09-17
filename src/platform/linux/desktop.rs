@@ -179,6 +179,54 @@ pub(super) fn to_device(screens: &[Screen], (x, y): (i32, i32)) -> (i32, i32) {
     }
 }
 
+// A window's far edges are taken from the corner it starts at and its own
+// size, at that monitor's scale. Converting the far corner as a point of its
+// own puts an edge that ends exactly on a boundary onto the next monitor,
+// and a window filling a screen came out a screen and a half tall.
+pub(super) fn to_device_rect(screens: &[Screen], (x, y): (i32, i32), (w, h): (i32, i32)) -> Rect {
+    let (left, top) = to_device(screens, (x, y));
+    let scale = screen_at(screens, (x, y)).map_or(1.0, |s| s.scale);
+    Rect::new(left, top, left + (w as f64 * scale).round() as i32, top + (h as f64 * scale).round() as i32)
+}
+
+// Front to back, the way the compositor stacks them: a fullscreen window over
+// everything on its workspace, floating ones over tiled ones, and among equals
+// the last focused first. Hyprland's 2 is fullscreen; its 1 is maximised,
+// which floating windows still stack above.
+fn in_front(fullscreen: i64, floating: bool, focus: i64) -> (bool, bool, i64) {
+    (fullscreen != 2, !floating, focus)
+}
+
+// The monitor along whose bottom he has asked for room, and how much, in
+// logical pixels. None when the ground there is free.
+pub(super) static STRIP: Mutex<Option<(String, i32)>> = Mutex::new(None);
+
+// Whether the tiles on the monitor's showing workspace reach the bottom of
+// the area the layout has, so that whatever stands there stands on somebody's
+// work. Measured against the area with his own strip still taken out of it,
+// which is what keeps the answer the same before and after he takes it.
+pub(super) fn tiles_reach_bottom(output: &str) -> bool {
+    let screens = screens();
+    let Some(screen) = screens.iter().find(|s| s.name == output) else { return false };
+    let clients = json("j/clients").unwrap_or(Value::Null);
+    clients.as_array().into_iter().flatten().any(|c| {
+        let tiled = c["mapped"].as_bool().unwrap_or(false)
+            && !c["hidden"].as_bool().unwrap_or(false)
+            && !c["floating"].as_bool().unwrap_or(false)
+            && c["fullscreen"].as_i64().unwrap_or(0) == 0
+            && c["monitor"].as_i64() == Some(screen.id)
+            && c["workspace"]["id"].as_i64() == Some(screen.workspace);
+        let Some((at, size)) = c["at"].as_array().zip(c["size"].as_array()) else { return false };
+        let frame = to_device_rect(&screens, (int(&at[0]), int(&at[1])), (int(&size[0]), int(&size[1])));
+        tiled && reaches_bottom(frame.bottom, screen.work.bottom, screen.scale)
+    })
+}
+
+// Within a gap's worth of the bottom, at the monitor's scale.
+fn reaches_bottom(tile_bottom: i32, work_bottom: i32, scale: f64) -> bool {
+    tile_bottom >= work_bottom - (40.0 * scale).round() as i32
+}
+
 pub(super) fn cursor(screens: &[Screen]) -> Option<(i32, i32)> {
     let at = json("j/cursorpos")?;
     Some(to_device(screens, (int(at.get("x")?), int(at.get("y")?))))
@@ -190,10 +238,25 @@ pub fn snapshot() -> Desktop {
     let active = json("j/activewindow").unwrap_or(Value::Null);
 
     let mut desk = Desktop { cursor: cursor(&screens), ..Desktop::default() };
-    desk.monitors = screens.iter().map(|s| Monitor { id: MonitorId(s.id as isize), whole: s.device, work: s.work }).collect();
+    // The room he asked for along the bottom is his own ground, not a bar: it
+    // is given back here so that he stands on the monitor's edge, not above
+    // the strip he took.
+    let strip = STRIP.lock().unwrap_or_else(|e| e.into_inner()).clone();
+    desk.monitors = screens
+        .iter()
+        .map(|s| {
+            let mut work = s.work;
+            if let Some((name, height)) = &strip
+                && *name == s.name
+            {
+                work.bottom = (work.bottom + (*height as f64 * s.scale).round() as i32).min(s.device.bottom);
+            }
+            Monitor { id: MonitorId(s.id as isize), whole: s.device, work }
+        })
+        .collect();
     // Only the workspace each monitor shows is on the screen.
     let shown: Vec<(i64, i64)> = screens.iter().map(|s| (s.id, s.workspace)).collect();
-    let mut windows: Vec<(bool, i64, Window)> = clients
+    let mut windows: Vec<((bool, bool, i64), Window)> = clients
         .as_array()
         .into_iter()
         .flatten()
@@ -207,16 +270,20 @@ pub fn snapshot() -> Desktop {
             let at = c["at"].as_array()?;
             let size = c["size"].as_array()?;
             let (x, y) = (int(&at[0]), int(&at[1]));
-            let (left, top) = to_device(&screens, (x, y));
-            let (right, bottom) = to_device(&screens, (x + int(&size[0]), y + int(&size[1])));
+            let Rect { left, top, right, bottom } = to_device_rect(&screens, (x, y), (int(&size[0]), int(&size[1])));
             let fullscreen = c["fullscreen"].as_i64().unwrap_or(0);
+            let floating = c["floating"].as_bool().unwrap_or(false);
             let window = Window {
                 id,
                 pid: c["pid"].as_i64().unwrap_or(0) as u32,
                 frame: Rect::new(left, top, right, bottom),
                 class: c["class"].as_str().unwrap_or("").to_string(),
                 // Hyprland's maximise keeps the bar; its fullscreen covers the monitor.
-                maximised: fullscreen == 1,
+                // A tile is a window the layout sized to its slot: sitting on its
+                // top edge would mean standing on the tile above it, and one alone
+                // fills the monitor without being fullscreen, so it counts the same
+                // as a maximised window.
+                maximised: fullscreen == 1 || !floating,
                 // Nothing anybody works in: a menu, a tooltip or an on-screen
                 // display, which is what a window with no class of its own is
                 // here. A Wayland popup is not a client at all and never
@@ -224,12 +291,11 @@ pub fn snapshot() -> Desktop {
                 overlay: c["class"].as_str().unwrap_or("").is_empty(),
                 topmost: c["pinned"].as_bool().unwrap_or(false),
             };
-            Some((c["floating"].as_bool().unwrap_or(false), c["focusHistoryID"].as_i64().unwrap_or(i64::MAX), window))
+            Some((in_front(fullscreen, floating, c["focusHistoryID"].as_i64().unwrap_or(i64::MAX)), window))
         })
         .collect();
-    // Front to back: floating windows over tiled ones, the last focused first.
-    windows.sort_by_key(|(floating, focus, _)| (!floating, *focus));
-    desk.windows = windows.into_iter().map(|(_, _, w)| w).collect();
+    windows.sort_by_key(|(order, _)| *order);
+    desk.windows = windows.into_iter().map(|(_, w)| w).collect();
     desk.foreground = active.get("address").and_then(Value::as_str).and_then(window_id);
     desk
 }
@@ -296,6 +362,38 @@ pub const FURNITURE: &[&str] = &["raccy", "raccy-panel", "raccy-menu", "raccy-gr
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn two_screens() -> Vec<Screen> {
+        vec![
+            Screen { id: 0, name: "A".into(), logical: Rect::new(0, 0, 1920, 1080), device: Rect::new(0, 0, 1920, 1080), work: Rect::new(0, 0, 1920, 1080), scale: 1.0, workspace: 1 },
+            Screen { id: 1, name: "B".into(), logical: Rect::new(1920, 0, 3840, 1080), device: Rect::new(1920, 0, 4800, 1620), work: Rect::new(1920, 0, 4800, 1620), scale: 1.5, workspace: 2 },
+        ]
+    }
+
+    // A window filling the first monitor ends on the second one's boundary;
+    // its far corner must not be measured at the second one's scale.
+    #[test]
+    fn a_window_filling_a_screen_is_no_taller_than_the_screen() {
+        let screens = two_screens();
+        assert_eq!(to_device_rect(&screens, (0, 0), (1920, 1080)), Rect::new(0, 0, 1920, 1080));
+        assert_eq!(to_device_rect(&screens, (1920, 0), (1920, 1080)), Rect::new(1920, 0, 4800, 1620), "and on the scaled one it grows with the scale");
+        assert_eq!(to_device_rect(&screens, (700, 500), (900, 400)), Rect::new(700, 500, 1600, 900));
+    }
+
+    #[test]
+    fn a_tile_within_a_gap_of_the_bottom_reaches_it() {
+        assert!(reaches_bottom(1070, 1080, 1.0));
+        assert!(reaches_bottom(1080, 1080, 1.0));
+        assert!(!reaches_bottom(600, 1080, 1.0), "a tile ending halfway up leaves the ground free");
+        assert!(reaches_bottom(1560, 1620, 1.5), "the gap grows with the scale");
+    }
+
+    #[test]
+    fn a_fullscreen_window_is_in_front_of_a_floating_one() {
+        let mut order = vec![in_front(0, true, 0), in_front(0, false, 1), in_front(2, false, 5), in_front(1, false, 2)];
+        order.sort();
+        assert_eq!(order, vec![in_front(2, false, 5), in_front(0, true, 0), in_front(0, false, 1), in_front(1, false, 2)]);
+    }
 
     #[test]
     fn the_event_socket_says_what_moved() {

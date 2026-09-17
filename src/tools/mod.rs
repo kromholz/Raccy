@@ -318,7 +318,10 @@ fn wifi_report(lang: Lang) -> Report {
             let line = lang.wifi_line(&w.ssid, w.signal, &security, weak);
             Report { title, text, line }
         }
-        WifiState::Denied => Report { title, text: format!("{}\n", lang.tool_label("location_needed")), line: lang.wifi_denied().into() },
+        // No line of his own: what he would say stands in the window above it.
+        WifiState::Denied => {
+            Report { title, text: format!("{}\n", lang.tool_label(if cfg!(windows) { "location_needed" } else { "location_needed_here" })), line: String::new() }
+        }
         WifiState::Disconnected => Report { title, text: format!("{}\n", lang.tool_label("not_connected")), line: lang.wifi_off().into() },
         WifiState::NoAdapter => Report { title, text: format!("{}\n", lang.tool_label("no_adapter")), line: lang.wifi_none().into() },
     }
@@ -650,7 +653,7 @@ impl Usage {
                 _ => lang.usage_line(None),
             }
         } else {
-            text.push_str(&format!("{}\n\n", lang.tool_label("no_sizes")));
+            text.push_str(&format!("{}\n\n", lang.tool_label(if cfg!(windows) { "no_sizes" } else { "no_sizes_here" })));
             let mut counts: HashMap<&str, usize> = HashMap::new();
             for process in self.seconds.back().map(|s| s.connections.as_slice()).unwrap_or_default() {
                 *counts.entry(process.as_str()).or_default() += 1;

@@ -40,20 +40,24 @@ mining_words = ["nicehash", "xmrpool", "minexmr", "moneroocean", "supportxmr", "
 # Tor relays and directories.
 tor_ports = [9001, 9030]
 
-# What kind of program a window he sits on belongs to, by the executable's name
-# without .exe, in lowercase; the kinds' lines are [sits_on] in the voice files.
-# Any other program gets his plain lines about sitting down.
+# What kind of program a window he sits on belongs to, in lowercase; the kinds'
+# lines are [sits_on] in the voice files. Any other program gets his plain lines
+# about sitting down.
+#
+# Each system calls a window by a different name, so all three spellings belong
+# in the same list: Windows gives the executable without .exe, a Mac gives the
+# application's name as a person reads it, and Wayland gives the app id.
 [seat]
-Browser = ["msedge", "chrome", "firefox", "opera", "brave", "vivaldi", "arc", "librewolf", "zen", "waterfox"]
-Code = ["code", "cursor", "windsurf", "devenv", "idea64", "rider64", "pycharm64", "clion64", "webstorm64", "rustrover64", "goland64", "zed", "sublime_text", "notepad++", "nvim-qt"]
-Terminal = ["windowsterminal", "wezterm-gui", "alacritty", "cmd", "powershell", "pwsh", "conhost", "mintty"]
-Chat = ["discord", "slack", "ms-teams", "teams", "telegram", "signal", "whatsapp", "element", "claude", "chatgpt"]
-Mail = ["outlook", "olk", "thunderbird", "mailspring"]
-Office = ["winword", "excel", "powerpnt", "onenote", "soffice", "notion", "obsidian"]
-Media = ["vlc", "mpc-hc64", "mpc-be64", "spotify", "potplayermini64", "obs64", "audacity"]
-Games = ["steam", "steamwebhelper", "epicgameslauncher", "battle.net", "riotclientux", "galaxyclient", "playnite.desktopapp"]
-Files = ["explorer", "totalcmd64", "doublecmd"]
-Design = ["photoshop", "illustrator", "figma", "blender", "krita", "inkscape", "aseprite"]
+Browser = ["msedge", "chrome", "firefox", "opera", "brave", "vivaldi", "arc", "librewolf", "zen", "waterfox", "safari", "google chrome", "microsoft edge", "orion", "org.mozilla.firefox", "chromium", "chromium-browser", "epiphany"]
+Code = ["code", "cursor", "windsurf", "devenv", "idea64", "rider64", "pycharm64", "clion64", "webstorm64", "rustrover64", "goland64", "zed", "sublime_text", "notepad++", "nvim-qt", "xcode", "visual studio code", "sublime text", "neovide", "org.gnome.builder", "jetbrains-idea", "jetbrains-rustrover"]
+Terminal = ["windowsterminal", "wezterm-gui", "alacritty", "cmd", "powershell", "pwsh", "conhost", "mintty", "terminal", "iterm2", "ghostty", "kitty", "wezterm", "warp", "tabby", "gnome-terminal", "org.gnome.console", "konsole", "foot", "xterm", "org.wezfurlong.wezterm", "com.mitchellh.ghostty"]
+Chat = ["discord", "slack", "ms-teams", "teams", "telegram", "signal", "whatsapp", "element", "claude", "chatgpt", "messages", "microsoft teams", "zoom.us", "org.telegram.desktop", "signal-desktop"]
+Mail = ["outlook", "olk", "thunderbird", "mailspring", "mail", "microsoft outlook", "mimestream", "spark", "org.gnome.evolution", "geary"]
+Office = ["winword", "excel", "powerpnt", "onenote", "soffice", "notion", "obsidian", "pages", "numbers", "keynote", "microsoft word", "microsoft excel", "microsoft powerpoint", "libreoffice", "libreoffice-writer", "libreoffice-calc", "preview"]
+Media = ["vlc", "mpc-hc64", "mpc-be64", "spotify", "potplayermini64", "obs64", "audacity", "iina", "music", "tv", "quicktime player", "obs", "mpv", "org.gnome.totem", "rhythmbox"]
+Games = ["steam", "steamwebhelper", "epicgameslauncher", "battle.net", "riotclientux", "galaxyclient", "playnite.desktopapp", "heroic", "lutris"]
+Files = ["explorer", "totalcmd64", "doublecmd", "finder", "nautilus", "org.gnome.nautilus", "dolphin", "thunar", "nemo", "pcmanfm"]
+Design = ["photoshop", "illustrator", "figma", "blender", "krita", "inkscape", "aseprite", "sketch", "affinity photo", "affinity designer", "pixelmator pro", "org.inkscape.inkscape", "gimp"]
 
 # ---------------------------------------------------------------- services
 

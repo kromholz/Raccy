@@ -1,6 +1,6 @@
 [package]
 name = "raccy"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2024"
 description = "A techy raccoon that lives on your desktop and feeds on your network traffic"
 
@@ -72,6 +72,8 @@ objc2-app-kit = { version = "0.3", features = [
 objc2-core-foundation = { version = "0.3", features = ["CFArray", "CFData", "CFDictionary", "CFNumber", "CFString"] }
 objc2-core-graphics = { version = "0.3", features = ["CGBitmapContext", "CGColorSpace", "CGContext", "CGDataProvider", "CGDirectDisplay", "CGEvent", "CGEventSource", "CGGeometry", "CGImage", "CGWindow", "CGWindowLevel"] }
 objc2-quartz-core = { version = "0.3", features = ["CALayer", "objc2-core-foundation"] }
+objc2-core-location = { version = "0.3.2", default-features = false, features = ["std", "CLLocationManager", "CLLocation", "CLLocationManagerDelegate", "CLError"] }
+objc2-core-wlan = { version = "0.3.2", default-features = false, features = ["std", "CWWiFiClient", "CWInterface"] }
 
 [build-dependencies]
 embed-resource = "3"

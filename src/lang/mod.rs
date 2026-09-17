@@ -82,6 +82,17 @@ fn duration(secs: u64) -> String {
 }
 
 impl Lang {
+    // What a line says about the machine it is running on is not the same on
+    // all three, so those lines come in a set per system and this is what
+    // their keys end in.
+    const HERE: &'static str = if cfg!(windows) {
+        ""
+    } else if cfg!(target_os = "macos") {
+        "_mac"
+    } else {
+        "_linux"
+    };
+
     pub fn detect() -> Lang {
         let name = crate::platform::host::locale_name();
         if name.starts_with("cs") || name.starts_with("sk") { Lang::Cs } else { Lang::En }
@@ -405,15 +416,19 @@ impl Lang {
             Finding::Offline { local: true, .. } => self.say("finding.offline_local", salt, &[]),
             Finding::Offline { local: false, .. } => self.say("finding.offline_none", salt, &[]),
             Finding::Online { secs, .. } => self.say("finding.online", salt, &[("dur", &duration(*secs))]),
+            // The four places are the same idea everywhere and something else
+            // on each: a registry key, a login item or a desktop entry; a
+            // service, a daemon or a unit. Each system says its own.
             Finding::NewAutorun { place, name } => {
                 use crate::watch::autoruns::Place;
-                let key = match place {
-                    Place::Run => "finding.autorun_run",
-                    Place::Startup => "finding.autorun_startup",
-                    Place::Service => "finding.autorun_service",
-                    Place::Task => "finding.autorun_task",
+                let which = match place {
+                    Place::Run => "run",
+                    Place::Startup => "startup",
+                    Place::Service => "service",
+                    Place::Task => "task",
                 };
-                self.say(key, salt, &[("name", name)])
+                let key = format!("finding.autorun_{which}{}", Self::HERE);
+                self.say(&key, salt, &[("name", name)])
             }
             Finding::HostsAdded { name, ip, more: 0 } => self.say("finding.hosts_one", salt, &[("name", name), ("ip", ip)]),
             Finding::HostsAdded { name, ip, more } => {
@@ -567,12 +582,14 @@ impl Lang {
         fill(self.text(key), &[("ssid", ssid), ("signal", &signal.to_string()), ("security", security)])
     }
 
+    // Why the key cannot be had differs by system, and so does what to do
+    // about it, so those two answers have a line of their own on each.
     pub fn share_line(self, ssid: &str, sharing: Sharing) -> String {
-        fill(self.text(&format!("share.{sharing:?}")), &[("ssid", ssid)])
-    }
-
-    pub fn wifi_denied(self) -> &'static str {
-        self.text("wifi.denied")
+        let key = match (sharing, cfg!(windows)) {
+            (Sharing::NeedsAdmin | Sharing::Unknown, false) => format!("share.{sharing:?}Here"),
+            _ => format!("share.{sharing:?}"),
+        };
+        fill(self.text(&key), &[("ssid", ssid)])
     }
 
     pub fn wifi_off(self) -> &'static str {
@@ -879,6 +896,38 @@ mod tests {
         assert_eq!(en.difference(&cs).collect::<Vec<_>>(), Vec::<&&String>::new(), "only in en.toml");
     }
 
+    // A line chosen by the system it is running on is only ever asked for on
+    // that system, so a missing one shows up nowhere else: the tests are run
+    // on Windows and a Mac would quietly say "(missing line)". Every such key
+    // is listed here and every one of them is checked for all three.
+    #[test]
+    fn every_system_has_the_lines_it_will_ask_for() {
+        let per_system = [
+            "finding.autorun_run",
+            "finding.autorun_startup",
+            "finding.autorun_service",
+            "finding.autorun_task",
+        ];
+        let plain = ["share.NeedsAdmin", "share.Unknown", "tool.label.location_needed", "tool.label.no_sizes"];
+        for lang in [Lang::Cs, Lang::En] {
+            for key in per_system {
+                for system in ["", "_mac", "_linux"] {
+                    let whole = format!("{key}{system}");
+                    assert!(lang.book().get(&whole).is_some_and(|set| !set.is_empty()), "{lang:?} has no {whole}");
+                }
+            }
+            for key in plain {
+                for here in ["", "_here", "Here"] {
+                    let whole = format!("{key}{here}");
+                    let asked = if key.starts_with("share.") { here != "_here" } else { here != "Here" };
+                    if asked {
+                        assert!(lang.book().get(&whole).is_some_and(|set| !set.is_empty()), "{lang:?} has no {whole}");
+                    }
+                }
+            }
+        }
+    }
+
     #[test]
     fn placeholders_are_known_and_match_across_languages() {
         let used = |lang: Lang, key: &str| -> BTreeSet<String> {
@@ -1113,7 +1162,6 @@ mod tests {
                 lang.network_line(None, 0),
                 lang.wifi_line("home", 70, "WPA2", false),
                 lang.wifi_line("home", 70, "WEP", true),
-                lang.wifi_denied().into(),
                 lang.wifi_off().into(),
                 lang.wifi_none().into(),
                 lang.neighbours_line(None),

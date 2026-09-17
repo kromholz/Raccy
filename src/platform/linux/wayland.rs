@@ -30,6 +30,9 @@ pub(super) enum Which {
     // The right-click menu, which a compositor does not open for us.
     Menu,
     Ground,
+    // A strip along the bottom of a tiled monitor that the tiles stop above,
+    // so that he stands on ground of his own rather than on somebody's work.
+    Strip,
 }
 
 impl Which {
@@ -39,6 +42,7 @@ impl Which {
             Which::Panel => 1,
             Which::Menu => 2,
             Which::Ground => 3,
+            Which::Strip => 4,
         }
     }
 }
@@ -47,6 +51,9 @@ impl Which {
 const BTN_LEFT: u32 = 0x110;
 const BTN_RIGHT: u32 = 0x111;
 const SOLID: u32 = 40;
+// How tall he stands, in logical pixels, from the last frame drawn: the
+// strip he asks for on a tiled monitor is exactly that and no more.
+pub(super) static BODY_LOGICAL: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
 const SCREENS_FOR: Duration = Duration::from_millis(500);
 
 pub(super) struct Wayland {
@@ -71,7 +78,7 @@ pub(super) struct State {
     drop_on: Option<Which>,
     // Held so that the compositor keeps telling us when nobody is there.
     _idle: Option<ext_idle_notification_v1::ExtIdleNotificationV1>,
-    wins: [Option<Win>; 4],
+    wins: [Option<Win>; 5],
     // `Some(None)` when it was shut without a choice.
     menu: Option<Menu>,
     menu_done: Option<Option<usize>>,
@@ -126,7 +133,7 @@ impl Wayland {
             offer: None,
             drop_on: None,
             _idle: idle_notification,
-            wins: [const { None }; 4],
+            wins: [const { None }; 5],
             menu: None,
             menu_done: None,
             over: None,
@@ -192,6 +199,7 @@ impl State {
             Which::Panel => "raccy-panel",
             Which::Menu => "raccy-menu",
             Which::Ground => "raccy-ground",
+            Which::Strip => "raccy-strip",
         };
         let layer = self.layer_shell.get_layer_surface(&surface, output.as_ref(), Layer::Overlay, name.to_string(), &self.qh, ());
         layer.set_anchor(Anchor::Top | Anchor::Left);
@@ -275,7 +283,15 @@ impl State {
         win.drawn = Some(index);
         match which {
             Which::Menu => win.surface.set_input_region(None),
-            _ => win.mark_input(&compositor, &qh, canvas),
+            _ => {
+                if which == Which::Pet {
+                    // The tallest he has stood, not this frame's pose: a strip that
+                    // grew and shrank with every hop would have the layout dancing.
+                    let body = ((canvas.height - solid_top(canvas)) as f64 / win.scale).round() as i32;
+                    BODY_LOGICAL.fetch_max(body, std::sync::atomic::Ordering::Relaxed);
+                }
+                win.mark_input(&compositor, &qh, canvas)
+            }
         }
         if win.configured && win.shown {
             win.attach(index);
@@ -298,6 +314,31 @@ impl State {
             _ => win.surface.attach(None, 0, 0),
         }
         win.surface.commit();
+    }
+
+    // The monitor he is drawn on, and its scale.
+    pub(super) fn pet_output(&self) -> Option<(String, f64)> {
+        self.wins[Which::Pet.index()].as_ref().map(|w| (w.output.clone(), w.scale))
+    }
+
+    // Anchored to the bottom edge and asking for that much room, which is
+    // how a bar keeps windows off itself. See-through, and no pixel of it
+    // takes a click: it is ground, not a thing.
+    pub(super) fn open_strip(&mut self, screen: &desktop::Screen, logical_height: i32) {
+        let height = (logical_height as f64 * screen.scale).round() as i32;
+        self.open(Which::Strip, (screen.device.left, screen.device.bottom - height), (screen.device.width(), height));
+        let compositor = self.compositor.clone();
+        let qh = self.qh.clone();
+        let Some(win) = self.wins[Which::Strip.index()].as_mut() else { return };
+        win.layer.set_anchor(Anchor::Bottom | Anchor::Left | Anchor::Right);
+        win.layer.set_exclusive_zone(logical_height);
+        self.cover(Which::Strip);
+        if let Some(win) = self.wins[Which::Strip.index()].as_mut() {
+            let nothing = compositor.create_region(&qh, ());
+            win.surface.set_input_region(Some(&nothing));
+            nothing.destroy();
+            win.surface.commit();
+        }
     }
 
     pub(super) fn at(&self, which: Which) -> Option<(i32, i32)> {
@@ -526,6 +567,16 @@ impl Win {
     }
 }
 
+// The first row with anything solid in it within the sprite's own box, so
+// that a bubble beside him or a hop above his line does not count as him.
+fn solid_top(canvas: &Canvas) -> usize {
+    let unit = canvas.width / crate::render::W;
+    let (x0, y0) = (crate::render::SPRITE_X * unit, crate::render::SPRITE_Y * unit);
+    (y0..canvas.height)
+        .find(|&y| canvas.pixels[y * canvas.width + x0..(y + 1) * canvas.width].iter().any(|p| p >> 24 >= SOLID))
+        .unwrap_or(canvas.height)
+}
+
 struct Pool {
     map: *mut u8,
     len: usize,
@@ -653,8 +704,23 @@ impl Dispatch<wl_output::WlOutput, usize> for State {
 impl Dispatch<wl_seat::WlSeat, ()> for State {
     fn event(state: &mut State, seat: &wl_seat::WlSeat, event: wl_seat::Event, _: &(), _conn: &Connection, qh: &QueueHandle<State>) {
         let wl_seat::Event::Capabilities { capabilities: WEnum::Value(caps) } = event else { return };
+        trace::record(|| format!("wayland: seat offers {caps:?}, pointer held {}", state.pointer.is_some()));
+        // A device that goes away takes its object with it: one held on to
+        // through a re-plug, or through wayvnc's pointer that lives only as
+        // long as a client, never delivers another event. It is let go here
+        // so that the next offer gets a fresh one.
+        if !caps.contains(wl_seat::Capability::Pointer)
+            && let Some(pointer) = state.pointer.take()
+        {
+            pointer.release();
+        }
         if caps.contains(wl_seat::Capability::Pointer) && state.pointer.is_none() {
             state.pointer = Some(seat.get_pointer(qh, ()));
+        }
+        if !caps.contains(wl_seat::Capability::Keyboard)
+            && let Some(keyboard) = state.keyboard.take()
+        {
+            keyboard.release();
         }
         if caps.contains(wl_seat::Capability::Keyboard) && state.keyboard.is_none() {
             state.keyboard = Some(seat.get_keyboard(qh, ()));
@@ -675,6 +741,7 @@ impl Dispatch<wl_pointer::WlPointer, ()> for State {
             }
             wl_pointer::Event::Motion { surface_x, surface_y, .. } => state.pointer_at(surface_x, surface_y),
             wl_pointer::Event::Button { button, state: WEnum::Value(pressed), .. } => {
+                trace::record(|| format!("wayland: button {button} {pressed:?}"));
                 state.button(button, pressed == wl_pointer::ButtonState::Pressed);
             }
             wl_pointer::Event::Axis { axis: WEnum::Value(wl_pointer::Axis::VerticalScroll), value, .. } => state.wheel(value),
