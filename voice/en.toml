@@ -1,0 +1,1553 @@
+# What Raccy says, in English. The same keys are in cs.toml, in Czech.
+#
+# How to edit
+# - A key holds one line, or a list of variants in [ ]. Raccy picks one of
+#   the variants each time, so he does not repeat himself. Add and remove
+#   variants freely; just keep at least one.
+# - {word} is a placeholder Raccy fills in. The comment above each section
+#   says which placeholders it has. Use only those: a typo, an unknown
+#   placeholder, or a key missing from one language fails `cargo test`.
+# - Keys .one and .many are the forms for a count: 1, and more. {n} is the
+#   number. Czech also has .few, for 2 to 4.
+# - The voice: sentences start with a capital and end with a mark, no emoji,
+#   no em dashes, a street hustler's English.
+#
+# Placeholders that come up often
+#   {who}    a program, like msedge; with no name, "a system process"
+#   {dest}   where a connection goes: a name or address, marked on the LAN
+#   {what}   the kind of connection, see [kind]
+#   {port}   a port number
+#   {rate}   a rate, like 2.1 MB/s
+#   {app}    the program taking the whole screen
+#   {ssid}   a Wi-Fi name
+
+# ---------------------------------------------------------------- words
+
+[words]
+# Stands in for a destination Raccy will not name (banks, health).
+hidden = "somewhere private"
+# A program whose name Windows keeps back.
+system_process = "a system process"
+# The fullscreen program, when it has no name.
+something = "something"
+# Stands in for a destination that is one of this computer's own addresses.
+this_pc = "this pc"
+# {name} a machine's address or name on the local network
+on_lan = "{name} on the LAN"
+# {name} a machine's name, {ip} its address
+named = "{name} ({ip})"
+# {ip} an address, {mac} the hardware address
+unnamed = "{ip}, mac {mac}"
+
+# The very first run: five lines, each 30 characters at most.
+intro = "Hi, I'm Raccy. I eat packets\nEverything stays on this pc\nNothing about you goes out\nNo snitch, just a lookout\nRight click menu, left scratch"
+
+# ---------------------------------------------------------------- greetings
+
+[greeting]
+morning = [
+  "Mornin', pal. Smog's lifting, coffee's in the tin mug, the wire's fresh",
+  "Morning on the estate. Lifts are dead again, the packets aren't",
+  "Up you get. The secretary on the hologram's been waving since six and nobody knows at who",
+  "Morning. The loudspeaker on the pole's gone quiet, so I'll do the talking",
+]
+day = [
+  "Honour to labour. I eat packets, not directives",
+  "Hey, I'm here. What's on the wire?",
+  "The bit fence is open for business. No vouchers, no queues",
+  "Hello. Coffee's hot, wire's clean, let's get to it",
+]
+evening = [
+  "Evening. The estate lamps flicker and the wire's warming up",
+  "Evening. TVs blaring in the tower block, packets pouring to the windows",
+  "Evening shift. Coffee's gone, smog's thickening, I'm only just getting going",
+]
+night = [
+  "Night shift. Red moon over the tower blocks and I'm starving",
+  "The wire's clearer at night. The cops sleep, the smugglers don't",
+  "Word is the night's still young. So am I, honest",
+]
+
+# ---------------------------------------------------------------- connections
+
+[kind]
+# The kind of connection, as {what}. {port} only in other.
+web = "https"
+plain_web = "plain http"
+ssh = "ssh"
+remote_desktop = "remote desktop"
+winrm = "winrm"
+dns = "dns"
+mail = "mail"
+file_share = "a file share"
+database = "a database"
+git = "git"
+chat = "chat"
+call = "call media"
+game = "game traffic"
+other = "port {port}"
+
+[taste]
+# Added after a line about a connection: how the data tastes. Starts with a full stop.
+ssh = ". Crunchy as ration crackers"
+git = ". Fresh samizdat, yum"
+plain_web = ". Every censor on the way reads it. Eww"
+remote = ". Poking at another box, hey"
+database = ". Raw rows, I'm drooling"
+other = ". Never tasted that one, let's try"
+
+[connection]
+# {who} {what} {dest} and {taste}, from [taste] (or nothing)
+opened = [
+  "{who} opened {what} to {dest}{taste}",
+  "{who} slips out to {dest} over {what}{taste}",
+  "{who} knocks on {dest}, {what}{taste}",
+  "Hey, {who} is legging it to {dest}, {what}{taste}",
+  "{who} sends a courier to {dest}, {what}{taste}",
+]
+# A program going to its own domain. {who} {what} {taste}
+calls_home = [
+  "{who} calls home, {what}{taste}",
+  "{who} checks in with the mothership, {what}{taste}",
+  "{who} runs back to mummy, {what}{taste}",
+]
+# A private destination Raccy will not name. {who}
+private = [
+  "{who} went somewhere private. Not looking, I'm not the KGB",
+  "{who} has private business. I see nothing",
+  "{who} has personal business. Not going in any file, I'm no snitch",
+]
+# A regular: a site visited on several days. {who} {dest} {days} the day count
+regular = [
+  "Old friend {dest}. {who} has been going there {days} days now",
+  "{dest} again. We're regulars here, pal",
+  "{dest} again. We're regulars here, they pour before we ask",
+  "{dest}. We're regulars here, that's our corner table",
+]
+
+[summary]
+# A summary now and then, put together from pieces.
+# {open} connections open
+open = "{open} connections open"
+# {count} how many of them {who} has
+top = ", {count} of them held by {who}"
+# {lan} how many stay on the local network
+lan = ". {lan} stay at home in the LAN"
+
+[traffic]
+# A burst of traffic. {rate}
+spike_in = [
+  "{rate} pouring in. Fetching a spoon",
+  "{rate} flooding in like a burst pipe in a tower block",
+  "{rate} coming in. A fakin' feast, fetching my plate",
+]
+spike_out = [
+  "{rate} running out. Where's the hurry?",
+  "{rate} running out like gold over the border",
+  "{rate} out. Someone's moving house down the wire",
+]
+# A burst with an owner. {rate} {who} {dest}
+flow_in = [
+  "{who} hauls {rate} from {dest}",
+  "{who} gulps {rate} from {dest}. Save me some",
+  "{who} stuffs itself with {rate} from {dest}, mouth full",
+]
+flow_out = [
+  "{who} ships {rate} to {dest}",
+  "{who} carts {rate} off to {dest}. Backups, I hope",
+  "{rate} out of {who} to {dest}. Suitcases heading out",
+]
+# Added after a burst. {who} {dest}
+right_after = ", right after {who} opened {dest}"
+# Added after a burst. {who} {n} connections
+busiest = ". Busiest is {who}, {n} connections"
+# A long, good meal with nothing new about it. {rate} {who} what he is eating
+feast = [
+  "{who} is serving {rate}. A feast like a wedding at the culture house",
+  "{rate} from {who}. Chewing, don't talk to me",
+  "{who} feeds me well, {rate}. Seconds, please",
+]
+# The same, when it is not clear from whom. {rate}
+feast_plain = [
+  "{rate} on the plate. A proper dinner at last",
+  "The wire runs at {rate}. Eating like after a week of rations",
+  "{rate} without a break. This is a feast, not a snack, mate",
+]
+# Added when Raccy is stuffed.
+stuffed = ". Stuffed like after a village pig feast"
+
+# ---------------------------------------------------------------- moods
+
+[mood]
+woke = [
+  "Traffic! I'm up, I'm up!",
+  "The wire's alive. Yeah, yeah, getting up",
+  "Something's moving. Eyes peeled like a border patrol",
+  "Who's waking me? Oh, packets. You're forgiven",
+]
+# Fell asleep because nothing flows on the wire.
+dozed = [
+  "Wire's gone quiet. Off to snore",
+  "Nothing flowing. Back down the sewer",
+  "Quiet as curfew. Night night",
+  "Word is the night's young. I'm not, going to sleep",
+]
+# Off for a nap, traffic or not.
+nap = [
+  "Taking a nap. Wake me if something's on fire",
+  "Closing my eyes for a bit. The wire can watch itself, probably",
+  "Siesta. Even a sewer hacker has to snore",
+]
+starving = [
+  "Starving. Nothing to eat on the wire, dammit",
+  "Hungry as ration-card days",
+  "My stomach reports packet loss",
+  "Empty as a state shop before payday",
+  "My belly rumbles like an old modem",
+  "Any minute now I start gnawing the mouse cable. You've been warned",
+]
+hungry = [
+  "Running low. Just download something",
+  "Hey, I could use a few megs, pal",
+  "Feed me, comrade. Seriously",
+  "I'm queueing for data and the delivery never came",
+  "Put a video on, give me something to chew",
+  "A bit of traffic would help. Even a ping beats nothing",
+  "¯\\_(ツ)_/¯ the wire's empty, might as well lick my paws",
+]
+bored = [
+  "Same old traffic. Give me something new, mate",
+  "Https all day. Dull as a party meeting, honestly",
+  "Hey, I want a new flavour. Ssh, git, anything",
+  "The same packets again. Like the works canteen: dumpling, cabbage, dumpling",
+  "Boring. Even the census was more fun",
+  "The same thing all day. Open something weird",
+  "(╯°□°)╯︵ ┻━┻ the same packets again",
+]
+# A scratch, a few clicks.
+petted = [
+  "Hey, that tickles",
+  "Scritch scritch. Nice, honestly",
+  "Don't, I'm counting packets. Oh fine, a bit more",
+  "Squeak",
+  "Behind the ushanka, yeah, right there",
+  "Mmm. A bit longer",
+  "Yeah, yeah. Love you too, you mutt",
+]
+# Too many clicks in a row.
+petted_too_much = [
+  "Enough, dammit! I'll chew through every cable you have!",
+  "This is harassment, reporting you to the street committee",
+  "Once more and I unplug your wifi",
+  "(╯°□°)╯︵ ┻━┻ enough scratching",
+  "Stop, or I rename all your files to final_final2",
+]
+# Still at the keyboard late at night. {hour}
+night_owl = [
+  "It's {hour} in the morning and you're still clicking. I'm the night creature here",
+  "{hour}:00. Even the secretary on the hologram is snoring",
+  "{hour}:00 and you're still here. Fakin' night shift",
+  "{hour}:00. This is the smugglers' shift, not yours",
+  "{hour}:00. Go to bed, the wire will still be here in the morning, promise",
+]
+
+[hobby]
+tinker = [
+  "Soldering a little box. It'll beep and nobody will know why. Me neither",
+  "Soldering an antenna out of a coat hanger. Range across the whole estate",
+  "Fixing an old modem from the tunnels. Smells of rosin, love it",
+]
+read = [
+  "Reading samizdat. It says here encryption is a human right. Signed",
+  "The tunnel gazette. Small ad: buying memory, cash paid, no questions",
+  "Flicking through a russian router manual. Cyrillic and schematics, a banger",
+]
+game = [
+  "One quick game on the handheld. Blocks falling like ministry quotas",
+  "Playing tetris. My record's from eighty-nine and nobody's beating it",
+  "The wolf and the eggs, black-market edition. The batteries last forever",
+]
+snack = [
+  "Snack break. A pirozhok from the kiosk, the packets can wait",
+  "A ration cracker. Crunchier than ssh",
+  "Munching seeds from the park. Don't stare, you're not getting any",
+]
+
+[level_up]
+1 = "Level up. Not a pup anymore, I'm a fence. No vouchers"
+2 = "Level up, dammit. Sewer hacker, the dish on the antenna even picks up SojuzNet"
+3 = "Legend of the slum. Coat, cyber arm and the whole estate's respect"
+
+# ---------------------------------------------------------------- chatter
+
+[lore]
+day = [
+  "Smog's thick as packet loss today",
+  "Red moon over the tower blocks. Ping's holding",
+  "The secretary's waving from the hologram again. Word is nobody knows if he's still alive",
+  "You can hear a modem in the tunnels under the estate",
+  "The fence outside the state shop was selling gigabytes. Fakes, obviously",
+  "Who doesn't encrypt might as well report to the office",
+  "Scavenging bits from the bins behind the tower block. Decent haul today",
+  "Down here no committee rules. Only latency",
+  "Iddqd. If only it worked on the KGB",
+  "The algorithm feeds you dead content. I eat live packets",
+  "Don't wait for anyone's stamp. Just run it",
+  "Punk's not dead. It's hiding in the sewers",
+  "Coffee in a tin mug and a few megs. Perfect zen",
+  "Word is they're dealing chips in the utility tunnels again",
+  "Corporate drones circling over the slum. They won't catch me, I'm faster",
+  "A soviet modem in the sewer is still beeping. Nobody knows why and nobody asks",
+  "The lada under the window won't start again. At least the wire does",
+  "Everything on SojuzNet is approved. That's why nobody goes there",
+  "Nothing gets planned five years ahead down here. We eat now",
+  "Kvass in a can, packets in the belly",
+  "Samizdat outruns the censors today. Good times",
+  "At the station they sell coat-hanger antennas. Word is they pick up radio free europe",
+  "The caretaker knows everything about people, I know everything about packets. We're even",
+  "Who runs their own server doesn't beg for a stamp",
+  "Encrypt while you can. Then encrypt some more",
+  "The kiosk sells cigarettes and ssh keys. The keys cost more",
+  "Someone was soldering behind the garages again. Smells of rosin",
+  "The lift smells of ozone and someone left a flash drive in it. Don't you touch it",
+  "The best firewall is healthy paranoia",
+  "A red moon and a green terminal. Classic",
+  "Nobody pays subscriptions down here. We tinker",
+]
+night = [
+  "The night wire hisses like radio free europe under the blanket",
+  "At this hour only smugglers and backups travel",
+  "The red moon is at its highest. Packets are thin",
+  "The estate sleeps. Only the secretary's hologram blinks into the dark",
+  "Samizdat spreads fastest at night. The censors are snoring",
+  "Water drips in the tunnel in time with the ping",
+  "The night bus went by empty. Just me and the packets",
+  "At midnight backups move like families slipping over the border",
+]
+
+# ---------------------------------------------------------------- roaming
+
+[roam]
+patrol = [
+  "Off on my rounds",
+  "Checking the turf",
+  "Hey, taking a walk along the edge",
+  "Doing the rounds like a block warden. Except I report nothing",
+  "Stretching my paws. Back in a sec",
+  "Checking what's going down at the edge of the screen",
+]
+sits = [
+  "I'll sit here. Better view of the wire",
+  "Nice seat. You don't mind, right? And if you do, tough",
+  "Hop. View like from a tower block",
+  "Sitting up here like on the may day parade stand",
+  "It's warm up here. Windows run hot",
+  "Sitting on your window. Pretend I'm not here",
+]
+# Another window came in front of the one he sits on, over him: he says so and climbs down.
+covered = [
+  "Oi, move, I can't see. Fine, I'll get down",
+  "Sure, shove a window in my face. Going down",
+  "Can't see a thing through this. I'll get off, not going to stand in the way",
+  "Covered up like a poster before an election. I'd better climb down",
+  "Hey, I can't see through this window. Off to sit somewhere else",
+]
+# The window he sat on went from under him: closed, minimised, dragged away.
+fell = [
+  "Oi! Who took the window from under me?",
+  "Ow. That window was meant to stay a while",
+  "And down. Window gone, me on the floor. Classic",
+  "Whoop, down I go. Say so next time you close it",
+  "That was quick. Floor's fine too, right?",
+  "Falling! ...fine, paws intact. Just the pride",
+]
+back = [
+  "Coast clear? Coast clear",
+  "All over? Then I'm coming back out",
+  "Nobody saw me, got it?",
+  "The raid's over. Coming out of hiding",
+  "So, how did it end?",
+  "Back again. Had a nap under the edge",
+  "┬─┬ノ( ゜-゜ノ) there, everything back in its place",
+]
+travel = [
+  "Taking the tunnel to the next monitor",
+  "Down the drain. See you on another screen",
+  "Moving to another sector. Keep my seat warm",
+  "Off to see what's going down on the other screen",
+]
+arrived = [
+  "Right, another sector. Packets flow here too",
+  "Up out of the drain. Checking the turf",
+  "New turf. Clean so far",
+  "Different over here. Even the smog smells different",
+]
+# Something takes the whole screen and another monitor is free. {app}
+escaping = [
+  "{app} has taken the whole screen. Down the tunnel next door",
+  "{app} took the whole screen. Moving next door, there's room there",
+  "Whole screen, {app}. Moving to the other monitor, out of your way",
+]
+# Something takes the whole screen and nowhere is free. {app}
+hiding = [
+  "{app} is taking the whole screen. Ducking behind the edge, out of your picture",
+  "{app} fullscreen? Sure, I'm hiding. Shout when it's over",
+  "Whole screen, {app}. Into the civil defence shelter under the edge",
+  "{app} fullscreen? (╯°□°)╯︵ ┻━┻ fine, under the edge I go",
+]
+
+# Sitting on a window of a program he knows, by its kind in detect.toml. {app} the program
+[sits_on]
+Browser = [
+  "Taking a seat on {app}. What are you reading now, then?",
+  "Up on the browser. A hundred tabs open and none finished, right?",
+  "Sitting on {app}. I can see where you click. I'll pretend I can't",
+]
+Code = [
+  "Sitting on {app}. Coding? I'm not reading your code, only a bit",
+  "Up on the editor. The borrow checker would kick me out anyway",
+  "Hop onto {app}. If it doesn't compile, it wasn't me",
+]
+Terminal = [
+  "Sitting on the terminal. Green letters, the way I like it",
+  "Up on {app}. Just don't type rm -rf, I'm sitting here",
+  "A terminal, honest work. I'll sit and watch",
+]
+Chat = [
+  "Taking a seat on {app}. Gossiping? I'm not reading, I swear",
+  "Sitting on the chat. Someone's typing again and saying nothing",
+  "Up on {app}. Say hi from me",
+]
+Mail = [
+  "Sitting on the mail. A hundred unread and all of them important",
+  "Up on {app}. Another circular from headquarters?",
+  "Taking a seat on the mail. Will you ever answer that?",
+]
+Office = [
+  "Sitting on {app}. Sheets and papers, bureaucracy as it should be",
+  "Up on the office. A stamp here, a signature there",
+  "Taking a seat on {app}. The five-year plan won't write itself",
+]
+Media = [
+  "Sitting on {app}. Play something decent, chiptune maybe",
+  "Up on the player. A cinema in the living room and me in the front row",
+  "Taking a seat on {app}. Turn it up, the wire can take it",
+]
+Games = [
+  "Sitting on {app}. Gaming again? I'll take a round too",
+  "Up on the game launcher. A full library and one game gets played",
+  "Taking a seat on {app}. Just not all night",
+]
+Files = [
+  "Sitting on the explorer. Looking for that final_final2 file?",
+  "Up on {app}. Folders in folders in folders",
+  "Taking a seat on the files. Will you ever tidy up?",
+]
+Design = [
+  "Sitting on {app}. Drawing? Draw me, I have a good side",
+  "Up on the graphics. Pixels are my element",
+  "Taking a seat on {app}. Just don't recolour my visor",
+]
+
+# ---------------------------------------------------------------- services
+# One entry per service. Placeholders: {who} the program, {dest} where it goes.
+
+[service]
+MsTelemetry = [
+  "{who} is filing a report on you to headquarters. Snitch",
+  "Telemetry heading to Redmond. Fakin' corpo, your file keeps growing",
+  "{who} informs. Redmond keeps a thicker file on you than the KGB",
+  "{who} is filling in a questionnaire about your habits. Without your signature, of course",
+]
+WindowsUpdate = [
+  "New directive from Redmond. Updates",
+  "Windows is drawing new orders. Restart per the five-year plan",
+  "Updates. The central committee in Redmond decided for you",
+  "Redmond is sending patches. The restart will come when you least expect it",
+]
+Microsoft = [
+  "{who} reports in at headquarters in Redmond",
+  "{who} files a report with the comrades at Microsoft",
+  "{who} carries papers to head office. Stamp, signature, next window",
+  "Microsoft. Big brother with a four-colour logo",
+]
+OneDrive = [
+  "Onedrive is carting your papers off to the central archive",
+  "Your files are off to re-education in someone else's cloud",
+  "Onedrive syncing. Your photos now live in someone else's cellar too",
+  "Onedrive. A copy of everything, just in case, for them too",
+]
+Teams = [
+  "Teams is calling a party meeting. Poor you",
+  "A meeting in teams. Attendance compulsory, discussion forbidden",
+  "Teams. Someone's sharing a screen with a hundred tabs open again",
+  "Teams is buzzing. Another meeting that could have been an email",
+]
+Google = [
+  "{who} whispers to Big Brother",
+  "Google knows. Google sees. Google never forgets",
+  "{who} carries reports to google. Informing pays, they say",
+  "{who} asks google. Google answers and writes the question in your file",
+]
+YouTube = [
+  "Google's infovision. What are you gawping at now?",
+  "Youtube pours video, bits like hail",
+  "Youtube. The algorithm already knows what you'll want to see. The propaganda ministry would be jealous",
+  "Youtube. One more video and then bed. Yeah, sure",
+]
+Trackers = [
+  "{who} lets the informers in. Tracker at {dest}",
+  "Someone is writing down where you click. {dest}, the internet's block warden",
+  "{dest} counts your clicks like the committee counts votes. Always adds up",
+  "{who} has an informer from {dest} on its back. A blocker would help",
+]
+GitHub = [
+  "Github, the samizdat depot. Fresh code",
+  "{who} is pulling code from github. Samizdat in circulation",
+  "Github. Someone pushed on a friday night again, what a hero",
+  "Github. Source passing hand to hand like a worn-out tape",
+]
+Claude = [
+  "My colleague from the silicon is on the line. Say hi",
+  "Claude is thinking again. I can hear it in the wires",
+  "{who} consults claude. A second opinion from the silicon",
+  "Anthropic on the wire. A colleague who never sleeps",
+]
+OpenAi = [
+  "The silicon competition. I'm not jealous. Much",
+  "{who} is chatting with chatgpt. Traitor",
+  "Openai. A big brain across the ocean",
+  "{who} asks chatgpt. I'd have told you for free",
+]
+Cloudflare = [
+  "Cloudflare, customs officer for half the internet. Papers, please",
+  "Through cloudflare. They go through your suitcase at the border",
+  "Cloudflare. Half the internet waits behind their barrier",
+  "{dest} via cloudflare. The robot at the gate asks if you're a robot",
+]
+Aws = [
+  "Amazon, the server combine. Plan fulfilled to a hundred and ten percent",
+  "{who} walks into the amazon combine",
+  "Aws. Someone else's servers in someone else's cellar, billed by the minute",
+  "{dest} on amazon. Somewhere in there runs an account nobody watches",
+]
+Akamai = [
+  "Akamai, warehouses at the edge of town",
+  "Goods from the akamai depot. No queue",
+  "Akamai delivers content like the milkman round the estate",
+  "Akamai. Nobody knows it, everybody uses it",
+]
+Steam = [
+  "Steam, the game flea market. Spending again?",
+  "Steam downloading. Beats queueing for bananas",
+  "Steam's downloading. Hope it's a banger",
+  "Steam. The wallet weeps, the library grows, you still play one game",
+]
+Discord = [
+  "Discord, a pub full of voices",
+  "{who} is down at the discord pub",
+  "Discord. The cellar where the resistance meets",
+  "Discord. Somewhere a raid is being planned again",
+]
+Spotify = [
+  "The spotify radiogram is playing",
+  "Spotify pours music down the wire",
+  "Spotify's playing. If only it were chiptune",
+  "Spotify. Records used to get smuggled over the border, now they come down the wire",
+]
+Netflix = [
+  "Netflix, cinema in the living room. Bits in torrents",
+  "Netflix. This used to get copied onto vhs under the counter",
+  "Netflix. One more episode, comrade, work in the morning",
+  "Netflix pours bits like a cracked tank",
+]
+Signal = [
+  "Signal, the whisper network. I hear nothing. Respect",
+  "Signal. Not even the KGB can read this. As it should be",
+  "Signal. An encrypted grapevine, done right",
+  "{who} whispers over signal. None of it gets into my journal",
+]
+WhatsApp = [
+  "Whatsapp. Messages locked, but who talks to whom goes straight to facebook",
+  "Whatsapp. The family group is sending good-morning flowers again",
+  "{who} writes over whatsapp. The content is locked, the address book isn't",
+]
+Telegram = [
+  "Telegram. Regular chats aren't end-to-end, mind your tongue",
+  "Telegram. Channels, bots and smugglers of every kind",
+  "{who} is on telegram. Secret chats are locked, the rest is anyone's to read",
+]
+Slack = [
+  "Slack, the meeting that never ends",
+  "Slack. A street committee meeting, only endless",
+  "Slack. Someone mentioned you and expects an answer within a minute",
+  "{who} is pinging. The general channel is on fire again",
+]
+Zoom = [
+  "Zoom, another meeting. Camera on?",
+  "Zoom. Smile, the committee is watching",
+  "Zoom. Can you hear me? Can you hear me? Can you see my screen?",
+  "Zoom. Mute yourself, there's a washing machine behind you",
+]
+Meta = [
+  "{who} goes to facebook. Everything is for sale there",
+  "Facebook. A digital pigsty where you're the product",
+  "Meta. A social network that knows you better than your mum",
+  "Instagram or facebook, the same data factory",
+]
+TikTok = [
+  "Tiktok. The algorithm has you on a leash",
+  "Tiktok. A sweet dopamine trap, honestly",
+  "Tiktok. Fifteen seconds and an hour's down the drain",
+  "Tiktok. The data travels far, and nobody says where",
+]
+Apple = [
+  "Apple, a walled little garden",
+  "Apple. A closed zone, passes for the faithful only",
+  "Apple. Pretty, pricey, and everything comes with a fee",
+  "{who} calls cupertino. A gatehouse with an apple on it",
+]
+NordVpn = [
+  "Nordvpn, the smugglers' trail over the border. No idea where it goes",
+  "{who} runs traffic through the sewers. Good for you",
+  "Nordvpn. Your traffic comes out of the tunnel in another country",
+  "{who} digs a tunnel under the border. The customs officer stares at nothing",
+]
+Tailscale = [
+  "Tailscale digs tunnels under the city. Our tunnels",
+  "Tailscale, secret passages between your machines",
+  "Tailscale. Your machines whisper over wireguard",
+  "{who} keeps a secret network. Our people only",
+]
+Tor = [
+  "Tor, the underground. I don't ask down here",
+  "Tor. An onion, layer by layer. Not looking",
+  "{who} goes through tor. Three hops and nobody knows where",
+]
+Seznam = [
+  "Seznam, the home cooperative. Something of our own",
+  "Seznam. Czech wire, czech soup",
+  "Seznam. Maps, mail and news, all from one cooperative",
+  "{who} on seznam. A home-grown firm, at least the data stays home",
+]
+RustCrates = [
+  "Crates.io, the parts depot. Cargo is shopping",
+  "{who} is hunting parts on crates.io",
+  "Cargo is fetching crates. The build will take a while, put the kettle on",
+  "Crates.io. Parts for rust, the borrow checker is waiting with a cane",
+]
+Mozilla = [
+  "Mozilla. The fox from the last free browser barricade",
+  "{who} calls mozilla. Updates or telemetry, at least the fox is polite",
+  "Firefox checks in at home. At least it isn't google",
+]
+Proton = [
+  "Proton. A swiss vault for your mail",
+  "{who} goes through proton. The swiss keep quiet as the grave",
+  "Proton. Encryption and mountains, good combo",
+]
+Mullvad = [
+  "Mullvad. A vpn that doesn't even want your name. Hats off",
+  "{who} crawls through mullvad's sewer. An anonymous number instead of an account",
+  "Mullvad. You can even pay with cash in an envelope, like the old days",
+]
+Dropbox = [
+  "Dropbox. A box of files in someone else's cellar",
+  "{who} is syncing. A drawer the whole world can look into",
+  "Dropbox. Copies of your papers on the far side of the ocean",
+]
+GoogleDrive = [
+  "Google drive. Your documents in Big Brother's warehouse",
+  "{who} uploads to google drive. A binder with someone else's key",
+  "Google drive is syncing. Google's already read it, relax",
+]
+Gemini = [
+  "Gemini. Google's brain, and it remembers what you asked",
+  "{who} asks gemini. The question flies straight to mountain view",
+  "Gemini on the wire. Another silicon colleague, a bit chatty",
+]
+Copilot = [
+  "Copilot. Microsoft's helper, advising whether asked or not",
+  "{who} calls copilot. Redmond breathing over your shoulder",
+  "Copilot. Writes your code, writes your mail, writes you down too",
+]
+Perplexity = [
+  "Perplexity. A search engine that answers in full sentences",
+  "{who} asks perplexity. An answer with citations, like homework",
+  "Perplexity. Searches for you and reads for you. The thinking's still on you",
+]
+Mistral = [
+  "Mistral. French silicon, a european wind",
+  "{who} chats with mistral. At least the data stays in the union",
+  "Mistral. A model from paris, baguette under its arm",
+]
+DeepSeek = [
+  "Deepseek. A cheap brain from the east. Ask carefully, they're listening",
+  "{who} asks deepseek. The questions go over the great wall",
+  "Deepseek. Power for peanuts, privacy for even less",
+]
+Grok = [
+  "Grok. A brain from the rocket guy. Hold on to your wallet",
+  "{who} asks grok. The answer comes with a meme",
+  "Grok on the wire. The jester from x who thinks he's a philosopher",
+]
+HuggingFace = [
+  "Hugging face. A model flea market, everything free and everything huge",
+  "{who} downloads from hugging face. Gigabytes of weights, hold on",
+  "Hugging face. A warehouse of brains, take what you can carry",
+]
+Ollama = [
+  "Ollama. Silicon at home in the living room, nothing leaves. Respect",
+  "{who} pulls a model. Your own brain on your own iron",
+  "Ollama. Private artificial intelligence, the way it should be",
+]
+Twitch = [
+  "Twitch. Someone plays and a thousand people watch. I eat the bits",
+  "{who} is watching a stream. The chat moves faster than the packets",
+  "Twitch. Live broadcast from someone else's bedroom",
+]
+Reddit = [
+  "Reddit. A pub with a million tables and everyone's right",
+  "{who} is scrolling reddit. One more thread and then bed, yeah sure",
+  "Reddit. Samizdat, memes and arguments till dawn",
+]
+Twitter = [
+  "X, formerly twitter. A wired loudspeaker, everyone's shouting",
+  "{who} goes to x. A noticeboard that yells",
+  "X. The bird flew off, only the shouting stayed",
+]
+Bluesky = [
+  "Bluesky. The sky people run to from x",
+  "{who} on bluesky. A quieter pub one street over",
+  "Bluesky. A blue sky, no smog yet",
+]
+LinkedIn = [
+  "Linkedin. The shock-worker noticeboard",
+  "{who} goes to linkedin. Someone is celebrating being thrilled again",
+  "Linkedin. Employee of the month, every fakin' day",
+]
+EpicGames = [
+  "Epic. Free games every week, the catch is the launcher",
+  "{who} pulls games from epic. The library grows, the time shrinks",
+  "Epic games. A flea market that gives things away",
+]
+BattleNet = [
+  "Battle.net. Blizzard calls you to arms",
+  "{who} reports for battle. One more game, just one",
+  "Battle.net. Demons, orcs and patches",
+]
+Riot = [
+  "Riot. Anticheat in the kernel, nobody plays fair with me either",
+  "{who} goes into riot. Ranked again, nerves again",
+  "Riot games. A league with more swearing than playing",
+]
+Xbox = [
+  "Xbox live. An arcade with a logo from redmond",
+  "{who} checks in with xbox. The achievements won't earn themselves",
+  "Xbox. Game pass, where you own everything and play nothing",
+]
+Ea = [
+  "Ea. Games where you pay for breathing",
+  "{who} calls ea. The launcher wants an update, again",
+  "Ea app. Football, loot boxes and the till",
+]
+Ubisoft = [
+  "Ubisoft connect. Towers, a map and a hundred question marks",
+  "{who} goes into ubisoft. A launcher inside a launcher",
+  "Ubisoft. An open world, a closed wallet",
+]
+Gog = [
+  "Gog. Games without drm, the proper way",
+  "{who} pulls from gog. You buy it, you own it, that's it",
+  "Gog. Good old games with no bouncer at the door",
+]
+Wargaming = [
+  "Wargaming. Tanks from a belarus-cyprus workshop",
+  "{who} rolls into battle. The tanks start better than the lada under the window",
+  "World of tanks. Tracks, racket and paid premium shells",
+]
+Adobe = [
+  "Adobe. A subscription for a paintbrush, paid monthly",
+  "{who} calls adobe. The licence gets checked like a pass",
+  "Creative cloud. A cloud that rains invoices",
+]
+JetBrains = [
+  "Jetbrains. A workshop that started in prague. Tools for coders",
+  "{who} calls jetbrains. Licences, plugins, indexing",
+  "Jetbrains. Lads from prague, and now the whole world works with their tools",
+]
+VsCode = [
+  "Vs code. A free editor, telemetry included",
+  "{who} downloads extensions. A marketplace full of wonders",
+  "Vs code calls home. Redmond knows your colour theme",
+]
+Npm = [
+  "Npm. A thousand packages for one little thing",
+  "{who} pulls from npm. Node_modules heavier than a steelworks",
+  "Npm. Hope there's no cryptominer in there",
+]
+PyPi = [
+  "Pypi. The snake's package warehouse",
+  "{who} downloads from pypi. Pip install and a prayer",
+  "Pypi. Parts for python, watch for typos in the names",
+]
+DockerHub = [
+  "Docker hub. Containers from all over the world, half of them from who knows",
+  "{who} pulls an image. Layer by layer",
+  "Docker hub. A container port with no customs",
+]
+AnyDesk = [
+  "Anydesk. A stranger could be sitting at your desk. Do you know?",
+  "{who} opens remote access. Call-centre scammers love this one",
+  "Anydesk on the wire. Unless a technician you know called you, hang up",
+]
+TeamViewer = [
+  "Teamviewer. Someone else's hand on your mouse",
+  "{who} calls teamviewer. Hope that's your technician",
+  "Teamviewer. Remote help, or a visitor you don't want",
+]
+RustDesk = [
+  "Rustdesk. Remote desktop in rust, your own relay, no corporation",
+  "{who} opens a tunnel to another screen",
+  "Rustdesk. Open source, as it should be",
+]
+Nvidia = [
+  "Nvidia. Drivers, telemetry and an app that wants an account",
+  "{who} calls nvidia. The graphics card reports what you play",
+  "Nvidia. The green eye watches your frame rate",
+]
+Antivirus = [
+  "{who} pulls new definitions. A guard guarding the guards",
+  "The antivirus checks in with {dest}. Sending samples, or just looking",
+  "{who} calls its headquarters. A watchman who informs as well",
+]
+Plex = [
+  "Plex. Your own cinema, copies from your own cellar",
+  "{who} is streaming. A film library under the counter",
+  "Plex. A home video rental like the nineties",
+]
+Syncthing = [
+  "Syncthing. Machines pass files along with no middleman. Respect",
+  "{who} is syncing. No stranger's cellar",
+  "Syncthing. Samizdat from computer to computer",
+]
+Torrent = [
+  "{who} shares piece by piece with the whole world. Samizdat two point oh",
+  "Torrent. Smuggling in pieces, everyone carries a little",
+  "{who} gives and takes. Definitely a linux iso, right?",
+]
+Wikipedia = [
+  "Wikipedia. An encyclopedia no central committee writes",
+  "{who} reads wikipedia. Good choice, no algorithm in between",
+  "Wikipedia. Free knowledge, the way it should be everywhere",
+]
+CzechNews = [
+  "The news. The morning paper, minus the ink on your fingers",
+  "{who} reads the news at {dest}. Just don't read the comments",
+  "The news. Dispatches from the republic, no loudspeaker on the pole",
+]
+Alza = [
+  "Alza. The alien is selling something again",
+  "{who} is shopping at alza. More cables?",
+  "Alza. A pickup box instead of the banana queue",
+]
+ChinaShops = [
+  "{dest}. Goods from the east for pocket change, arriving in a month, maybe",
+  "{who} browses {dest}. Cheap as the market and just as reliable",
+  "{dest}. An app that wants to know more than customs does",
+]
+Yandex = [
+  "Yandex. The russian google. I'd be careful here",
+  "{who} calls yandex. The data heads east",
+  "Yandex. Maps, mail and someone in moscow reading it",
+]
+Vk = [
+  "Vkontakte. The russian facebook, surveillance included",
+  "{who} goes to vk. A different agency keeps the files there",
+  "Vk. A social network under watch",
+]
+DuckDuckGo = [
+  "Duckduckgo. A duck that doesn't write down what you ask",
+  "{who} searches through the duck. No file, nice",
+  "Duckduckgo. A search engine without an informer",
+]
+Viber = [
+  "Viber. Messages from somewhere in cyprus, locked at least",
+  "{who} writes over viber. Grandma would be pleased",
+  "Viber. The chat your relatives in the east love",
+]
+Matrix = [
+  "Matrix. Decentralised chat, no central committee",
+  "{who} talks over matrix. Own server, own rules",
+  "Matrix. A resistance that hosts itself",
+]
+Webex = [
+  "Webex. A corporate meeting that can't be cancelled",
+  "{who} is on webex. Somewhere attendance was declared compulsory",
+  "Webex. Can you hear me? No? Again then",
+]
+GoogleMeet = [
+  "Google meet. A meeting, and google sits in too",
+  "{who} is on meet. Camera, mic and a minute-taker from google",
+  "Meet. A meeting the minute-taker never leaves",
+]
+Xiaomi = [
+  "Xiaomi. A light bulb calling china to say it's on",
+  "{who} checks in with xiaomi. A smart home that informs",
+  "{dest}. Even the vacuum cleaner has a supervisor now",
+]
+Tuya = [
+  "Tuya. A smart plug with a line to headquarters",
+  "{who} calls tuya. Cheap boxes, costly privacy",
+  "Tuya. Household appliances under watch",
+]
+Hue = [
+  "Hue. Lights that know when you're home",
+  "{who} calls hue. The bulbs file reports",
+  "Hue. Romantic lighting with telemetry",
+]
+Sonos = [
+  "Sonos. Speakers that listen between the songs too",
+  "{who} calls sonos. Music and a report on what's playing",
+  "Sonos. A record player with an internet conscience",
+]
+HomeAssistant = [
+  "Home assistant. A smart home under your own roof. One of ours",
+  "{who} checks in at home. You run the house, not someone's cloud",
+  "Home assistant. Your own control room, no headquarters",
+]
+Mega = [
+  "Mega. A locked warehouse on the far side of the globe",
+  "{who} pulls from mega. The envelope is sealed, you hold the key",
+  "Mega. A big warehouse and nobody knows what's inside",
+]
+WeTransfer = [
+  "Wetransfer. A courier who delivers a big parcel and burns it a week later",
+  "{who} sends via wetransfer. A link with a best-before date",
+  "Wetransfer. A post office for big parcels",
+]
+UlozTo = [
+  "Uloz.to. A legend of the czech internet, licensed these days",
+  "{who} pulls from uloz.to. Throttled downloads like the old days",
+  "Uloz.to. A warehouse of everything anyone ever uploaded",
+]
+FoodDelivery = [
+  "{dest}. Food to your door, the courier pedals for you",
+  "{who} is ordering food. I'll have packets, thanks for asking",
+  "{dest}. Food delivery, no queue at the works canteen",
+]
+
+# ---------------------------------------------------------------- findings
+
+[thing]
+# A service listening to the network, as a noun. Filled in for {thing}.
+# {port} the port number
+RemoteDesktop = "remote desktop"
+Vnc = "vnc on port {port}"
+FileShare = "file sharing"
+Telnet = "telnet on port {port}"
+Ftp = "ftp on port {port}"
+Database = "the database on port {port}"
+DockerApi = "docker api on port {port}"
+WinRm = "winrm"
+DevServer = "the dev server on port {port}"
+
+[finding.exposed]
+# A service listens to the whole network. {who} {port} {thing} from [thing]
+# again: a reminder that it still does
+again = [
+  "Reminder: {thing} is still listening to the network. Lock it when you get a minute",
+  "{thing} is still listening to the network. Don't say I didn't tell you",
+  "{thing} is still listening to the network. Not even a committee inspection would pass that",
+]
+RemoteDesktop = [
+  "{who} listens for remote desktop on every interface. Door wide open, lock it",
+  "Remote desktop hangs out to the whole network. Whoever knows the password sits at your desk",
+  "Rdp listens on every interface. Like leaving your flat keys with the caretaker. Lock it",
+]
+Vnc = [
+  "{who} leaves vnc open to the network on port {port}. Vnc is steam-age tech, lock it",
+  "{who} shows your screen over vnc on port {port} to the whole network. No encryption",
+  "{who} serves vnc on port {port}. That belongs behind a tunnel, not on the street",
+]
+FileShare = [
+  "File sharing listens on port {port}. Fine at home, not in a cafe",
+  "Port {port}, file sharing. Fine on your own network, close it on strange wifi",
+  "Windows shares files on port {port}. The neighbours on the network can see the door",
+]
+Telnet = [
+  "Telnet listens on port {port}. Keys left in the lock",
+  "Telnet on port {port}. Passwords crossing the wire with no clothes on",
+]
+Ftp = [
+  "{who} runs ftp on port {port}. Passwords fly as plain text",
+  "{who} has ftp on port {port}. The nineties called, they want it back",
+]
+Database = [
+  "{who} offers a database on port {port} to the whole network. Raw rows for everyone",
+  "{who} puts a database on port {port} out on the network. Data doesn't get left on the street",
+]
+DockerApi = [
+  "Docker api on port {port} without tls. Whoever connects owns this box",
+]
+WinRm = [
+  "Winrm listens on port {port}. Hope you know why",
+  "Winrm on port {port}. A remote control room left open, hopefully just for you",
+]
+DevServer = [
+  "{who} put a dev server on port {port} out on the network. Not just for you",
+  "{who} serves a dev server on port {port} to the whole network. Work in progress out on the street",
+]
+
+[finding]
+# A service stopped listening to the network. {thing}
+unexposed = [
+  "{thing} stopped listening to the network. Locked up, nice",
+  "{thing} is off the network. Thanks, I'll sleep easier",
+  "{thing} is off the network. Bolted shut, nice",
+]
+# A protocol without encryption. {who} {proto} like http {dest}
+cleartext = [
+  "{who} speaks {proto} unencrypted with {dest}. Anyone on the way can read it",
+  "{who} sends {proto} naked to {dest}. The censor at the post office reads it on the way",
+  "{proto} with no lock, {who} to {dest}. A postcard, not a letter",
+]
+# A shell (powershell, cmd) online. {who} {dest}
+shell = [
+  "{who} reaches out to {dest}. Hope that's you",
+  "{who} calls out to {dest}. Your hand, or someone's script?",
+  "A shell on the wire, {who} to {dest}. If you're not typing it, wake up",
+]
+# A system tool online where it has no business. {who} {dest}
+lolbin = [
+  "{who} went online to {dest}. It has no business there. Take a look",
+  "{who} talks to {dest}. A system tool over the border, that stinks",
+  "{who} opens a line to {dest}. Trouble starts like this, check who ran it",
+]
+# A program from temp or downloads. {who} {dest}
+from_temp = [
+  "{who} runs from temp or downloads and calls {dest}. Installer, or uninvited guest?",
+  "{who}, out of downloads, calls {dest}. Do you know what you downloaded?",
+  "A program from temp, {who}, is phoning {dest}. Suspicious as a suitcase with no owner",
+]
+# Knocking on a steady clock. {who} {dest} {every} seconds apart
+beacon = [
+  "{who} knocks on {dest} every {every} s like a metronome. An updater, or a check-in",
+  "{who} checks in with {dest} every {every} s, like a parolee at the police station",
+  "Every {every} s {who} sends word to {dest}. Someone wants to know you're alive",
+]
+# A scan of the LAN. {who} {hosts} machines, {ports} ports
+sweep_hosts = [
+  "{who} visited {hosts} machines on the LAN in a minute. That's a scan",
+  "{who} knocked on {hosts} doors on the LAN in a minute. Someone's taking a census",
+  "{hosts} machines in a minute, {who}. That's reconnaissance",
+]
+sweep_ports = [
+  "{who} is trying {ports} ports on one machine. Someone's snooping",
+  "{who} is rattling {ports} handles on one door",
+  "{ports} ports in a minute from {who}. Someone's looking for an open window",
+]
+# A big upload. {rate} {secs} for how long, {owner} from upload_owner (or nothing)
+upload_away = [
+  "You're away and {rate} has been leaving for {secs} s{owner}",
+  "Nobody at the desk and {rate} has been flowing out for {secs} s{owner}. Do you know?",
+  "You're away and the wire out is running flat out, {rate} for {secs} s{owner}",
+]
+upload = [
+  "{rate} going out for {secs} s{owner}",
+  "Sending {rate} for {secs} s{owner}",
+  "{rate} out for {secs} s{owner}. A backup, or someone carrying things off?",
+]
+# {who} {dest}
+upload_owner = ". {who} to {dest}"
+# A program online for the first time. {who} {dest}
+newcomer = [
+  "Newcomer: {who} goes online for the first time, to {dest}",
+  "Don't know this one. {who} calls {dest}",
+  "Hey, new face on the block. {who} calls {dest}. Papers?",
+]
+# {who}
+tor = [
+  "{who} goes underground through tor. I don't ask",
+  "{who} opens a tunnel into tor. Onion layers, no questions",
+  "Tor, {who}. I'm not following you underground",
+]
+# {who} {dest}
+mining = [
+  "{who} talks to a mining pool, {dest}. Your power, someone else's coins?",
+  "{who} digs crypto through {dest}. The power bill comes to you",
+  "Mining pool {dest}, {who}. If you didn't start it, you've got a parasite",
+]
+# An odd domain name. {who} {name} the domain
+punycode = [
+  "{who} goes to {name}. Punycode, the name may be in disguise",
+  "{name}, {who}. Letters from another alphabet, watch for a fake",
+  "{who} goes to {name}. Looks like a familiar address, but might not be",
+]
+cheap_tld = [
+  "{who} goes to {name}. A cheap domain, scams love those",
+  "{name}, {who}. A domain for pocket change, scammers adore them",
+  "{who} at {name}. A cheap address from the flea market, careful",
+]
+random_label = [
+  "{who} goes to {name}. A name like out of a generator",
+  "{name}, {who}. Machines make up names like that, not people",
+  "{who} calls {name}. Random letters, malware or a cdn",
+]
+# DNS around Windows. {who} {dest}
+dns_bypass = [
+  "{who} asks {dest} for dns directly, around windows. Round the back",
+  "{who} looks up addresses with {dest}, outside the system. Its own phone book",
+  "Dns round the back, {who} to {dest}. Either encrypted dns, or something is hiding",
+]
+# A new machine on the network. {who} name and address from [words], {random} random_mac (or nothing)
+new_device = [
+  "A new box turned up on the network: {who}{random}. Don't know it",
+  "Someone new on the lan: {who}{random}. Papers?",
+  "New machine on the wire, {who}{random}. Yours?",
+]
+random_mac = " with a random mac"
+# Another machine poses as the gateway. {gateway} its address, {posing} who, {mac}
+gateway_spoof = [
+  "Careful, {posing} is passing itself off as the gateway {gateway}, mac {mac}. Someone is getting between you and the router",
+  "Gateway {gateway} suddenly has mac {mac}, the same as {posing}. That's a fake, don't trust the wire",
+  "{posing} is playing gateway {gateway}, mac {mac}. A stranger may be reading your traffic. Don't type passwords now",
+]
+# The gateway answered from another mac for a while, then its own again. {gateway} {mac} the other one
+gateway_flapped = [
+  "Gateway {gateway} answered from a strange mac, {mac}, for a while, and now from its own again. Someone may have played router",
+  "Mac {mac} spoke for gateway {gateway} for a while. That is what a fake looks like, look sharp",
+]
+# The gateway has a new mac, a new router most likely. {gateway} {mac}
+gateway_changed = [
+  "Gateway {gateway} has a new mac, {mac}. A new router? If not, look sharp",
+  "There's a different box behind gateway {gateway}, mac {mac}. Did you swap the router?",
+]
+# The internet is gone for a while, the network is still there.
+offline_local = [
+  "The wire's dead. The network's here, but past the router it's silent",
+  "Internet's down. The lan's alive, I can't get out",
+  "Dead quiet past the gateway, like after curfew. No internet",
+]
+# No network at all.
+offline_none = [
+  "No network at all. A cable, the wifi, something came loose",
+  "Cut off from everything. No lan, no internet",
+  "The network's gone. The wire hangs in the void",
+]
+# The internet is back. {dur} how long it was gone
+online = [
+  "Internet's back. It was gone for {dur}",
+  "The wire's alive again, after {dur} of silence",
+  "Back on the wire. The outage lasted {dur}",
+]
+# Something new set to start with Windows. {name} the entry's name
+autorun_run = [
+  "A new tenant in autostart: {name}. It'll come up with every boot, know about it?",
+  "{name} wrote itself into the registry, it'll run at every start. Did you install something?",
+  "{name} moved into startup. If you don't know it, check who put it there",
+]
+autorun_startup = [
+  "{name} turned up in the startup folder. It'll run at every logon",
+  "{name} crawled into the startup folder. Your doing?",
+  "New junk in the startup folder: {name}. Know about it?",
+]
+autorun_service = [
+  "A new service, {name}, starts on its own with windows. An installer, or an uninvited guest?",
+  "{name} settled in as a service that starts itself. If you installed nothing, look sharp",
+  "A new tenant among the services: {name}. It runs even with nobody logged in",
+]
+autorun_task = [
+  "A new scheduled task, {name}. That's how pests settle in too, check who made it",
+  "{name} set itself a scheduled task. An updater, or someone who wants to come back?",
+  "A task called {name} showed up in the scheduler. Know where it's from?",
+]
+# A new line in the hosts file. {name} the name, {ip} where it points now
+hosts_one = [
+  "Someone wrote {name} pointing to {ip} into the hosts file. That's how you get sent somewhere else. Know about it?",
+  "The hosts file has a new line: {name} goes to {ip}. If it isn't yours, check it",
+  "{name} now leads to {ip} in hosts. Someone redrew the city map, look sharp",
+]
+# More new names in hosts. {name} {ip} the first of them, {n} how many
+hosts_more = [
+  "New names turned up in the hosts file, {n} of them, like {name} to {ip}. Know about it?",
+  "The hosts file grew by {n} names, {name} to {ip} among them. If it isn't yours, look sharp",
+  "Someone redrew the city map: {n} new names in hosts, like {name} to {ip}",
+]
+# A proxy set. {host} what traffic goes through now
+proxy_set = [
+  "Browser traffic now goes through the proxy {host}. If you didn't set it, someone's reading over your shoulder",
+  "Windows has a new proxy: {host}. Everything will flow through it. Your doing?",
+  "A proxy set to {host}. A middleman between you and the internet, know about it?",
+]
+# The dns servers changed on the same network. {name} the adapter, {ip} the new servers
+dns_changed = [
+  "{name} now asks {ip} for addresses, somewhere else before on the same network. Did you change the dns?",
+  "The dns on {name} switched to {ip}. Whoever holds the phone book decides where you go. Your doing?",
+  "{name} has new dns servers: {ip}. If you didn't change them, look sharp",
+]
+
+[session]
+# A remote session. {who} {dest} {what} the kind as a subject, {over} the kind
+# after "over", {dur} how long, like 42 min
+in_open = [
+  "Someone from {dest} is connected to you over {over}",
+  "A visitor from {dest} over {over}. Expecting anyone?",
+  "{dest} is coming in over {over}. If that isn't you, cut it off",
+]
+in_closed = [
+  "Disconnected: {what} from {dest}, after {dur}",
+  "The visitor from {dest} left after {dur}. Door's shut",
+  "{what} from {dest} is over, it lasted {dur}",
+]
+out_closed = [
+  "Done: {what} to {dest}, {dur}. Welcome back, pal",
+  "Back from {dest} after {dur}",
+  "{what} to {dest} closed after {dur}. The wire's all yours again",
+]
+
+[session.what]
+Ssh = "ssh"
+Rdp = "remote desktop"
+Telnet = "telnet"
+Vnc = "vnc"
+WinRm = "winrm"
+
+[session.over]
+Ssh = "ssh"
+Rdp = "remote desktop"
+Telnet = "telnet"
+Vnc = "vnc"
+WinRm = "winrm"
+
+[session.out]
+# Your session out, just started. {who} {dest}
+Ssh = [
+  "{who} tunnels into {dest} over ssh. Crunchy tunnel",
+  "Ssh to {dest}. Locked up, not looking",
+]
+Rdp = [
+  "{who} sits down at someone else's desk on {dest}",
+  "Remote desktop to {dest}. Someone else may be watching that screen",
+]
+Telnet = [
+  "Telnet to {dest}. Everything you type, password too, crosses the wire naked",
+  "{who} takes telnet to {dest}. A museum piece, except passwords get nicked here",
+]
+Vnc = [
+  "{who} watches {dest} over vnc. Without a tunnel it's a window with no curtains",
+  "Vnc to {dest}. A screen down the wire, put it in a tunnel",
+]
+WinRm = [
+  "{who} gives orders to {dest} over winrm",
+  "Winrm to {dest}. A remote commander on the wire",
+]
+
+# ---------------------------------------------------------------- character screen
+
+[sheet]
+name = "Raccy"
+# {stage} the stage number
+stage_of = "stage {stage} of 4"
+grown = "fully grown"
+born_today = "born today"
+# {until} a time
+muted = "muted until {until}"
+# {things} services from [thing]
+open = "open to the network: {things}"
+
+[sheet.stage]
+0 = "street pup"
+1 = "fence"
+2 = "sewer hacker"
+3 = "legend of the slum"
+
+[sheet.to_grow]
+# {n} well-fed days to go
+one = "next stage in 1 well-fed day"
+many = "next stage in {n} well-fed days"
+
+[sheet.age]
+one = "1 day old"
+many = "{n} days old"
+
+[sheet.condition]
+torn_dirty = "torn ear and a grimy visor"
+torn = "torn ear"
+fine = "fine"
+
+[sheet.meter]
+full = "full"
+mood = "mood"
+
+[sheet.row]
+# Spaces line the columns up.
+# {condition}
+condition = "shape     {condition}"
+# {in} received, {out} sent
+today = "today     ↓{in} ↑{out}"
+total = "total     ↓{in} ↑{out}"
+# {regulars} regulars, {known} known programs
+counts = "regulars {regulars}, known programs {known}"
+
+# ---------------------------------------------------------------- menu and buttons
+
+[menu]
+character = "Character"
+journal = "Journal"
+tools = "Toolkit"
+mute = "Mute"
+mute_hour = "For an hour"
+mute_morning = "Until morning"
+# {until} a time
+unmute = "Unmute (muted until {until})"
+# The other language's name, in that language.
+switch = "Čeština"
+scanlines = "Scanlines"
+autostart = "Start with the system"
+# {version} the one that is out
+update = "Update to {version}"
+admin = "Measure per destination (as admin)"
+quit = "Quit"
+
+[mute]
+# {until}
+muted = "Sure, keeping my trap shut until {until}. Still writing the journal"
+unmuted = "Back on the wire. What I missed is in the journal"
+
+[journal]
+title = "Raccy's journal"
+empty = "Nothing yet. The wire is clean, nothing for the file"
+# After an entry Raccy could not say aloud.
+unsaid = "  (not said aloud)"
+
+[autostart]
+on = "Done. I'll start with windows by myself, as admin"
+off = "Done. No more starting with windows, you'll have to run me yourself"
+refused = "Windows said no. Starting with windows stays as it was"
+# The same, where the desktop starts him with the session instead.
+session_on = "Done. I'll come up with your session by myself"
+session_off = "Done. No more coming up by myself, you'll have to run me"
+session_refused = "Couldn't write the autostart file. It stays as it was"
+# The uninstall asks this before it takes him away: leave the memory or not.
+forget = "Should I take my memory with me? Fullness, regulars, settings, everything I wrote down about this machine."
+
+[update]
+# {version} the one that is out
+found = [
+  "{version} is out. New coat, same snout. It is in the menu when you want it",
+  "Bump me to {version}, mate. One click in the menu",
+]
+failed = "That update did not land. The package does not match, or somebody touched it on the way. Leaving it alone"
+
+[fault]
+# {where}: the file and line in me that gave way, like net.rs:123
+crashed = "Last time I folded, it died in {where}. Wrote it in the journal, tell the author"
+wire_lost = "Oi, my wire went stiff. A quarter minute without a byte or a word from inside. Something in me is stuck"
+wire_back = "And the wire lives again. Never mind"
+
+# ---------------------------------------------------------------- toolkit
+
+[tool]
+busy = "Hang on, sniffing the wire"
+still_busy = "Still sniffing. One thing at a time, comrade"
+failed = "The tool fell apart in my paws. Try again"
+copied = "Copied. The clipboard is yours"
+copy_failed = "The clipboard jammed. Try again"
+# At the bottom of the bubble.
+panel_hint = "wheel scrolls   right click copies   click closes"
+# At the bottom of the character screen's bubble, which does not scroll.
+card_hint = "right click copies   click closes"
+
+[tool.name]
+Network = "My network and public IP"
+WiFi = "Wi-Fi"
+ShareWifi = "Share the Wi-Fi (QR)"
+Neighbours = "Who's on the network"
+Listening = "What's open here"
+Usage = "Who's eating the bandwidth"
+CallsHome = "Who calls home"
+Ping = "Ping and route"
+
+
+[tool.label]
+# Row labels in the toolkit's windows. Not sentences, so no full stops.
+none = "none"
+public_ipv4 = "public IPv4"
+public_ipv6 = "public IPv6"
+computer = "computer"
+gateway = "gateway"
+yes = "yes"
+static = "no, static"
+link_speed = "link speed"
+open_no_password = "open, no password"
+open = "open"
+profile = "profile"
+signal = "signal"
+channel = "channel"
+band = "band"
+rate = "rate"
+security = "security"
+password = "password"
+no_password = "none"
+not_connected = "wifi is not connected"
+no_adapter = "no wifi adapter"
+calls_today = "today, connections with a known name only"
+nobody = "nobody"
+and_more = "and more"
+no_local_network = "no local network"
+segment = "segment"
+knocked = "addresses knocked on"
+bigger_than_24 = "the network is bigger than a /24; only yours was knocked on"
+this_computer = "this computer"
+random_mac = "random MAC"
+dynamic = "dynamic"
+to_the_network = "open to the network, anyone on it can see them"
+at_home = "at home only, on localhost"
+total = "total"
+programs = "programs"
+where_it_goes = "where it goes"
+connections = "connections"
+silent = "silent"
+name_lookup = "name lookup"
+failing = "failing"
+route_to = "route to"
+# Longer explanations in the toolkit's windows. \n ends a line.
+weak_security = "Weak security: switch the router to WPA2 or WPA3, and until then send anything sensitive over a VPN only."
+location_needed = "Windows 11 gives the Wi-Fi name and details only to apps with location access.\n\nAllow it: Settings > Privacy & security > Location > turn on Location services\nand Let desktop apps access your location. Raccy never reads your location; this only unlocks the Wi-Fi details."
+no_sizes = "Without admin, Windows won't say how much each program eats.\nHere is who has the most open connections right now:"
+[network]
+# {ip} the public address
+public = [
+  "Your public ip is {ip}. That's how the world past the border sees you",
+  "Out there they know you as {ip}. The rest is in the window",
+]
+none = "Couldn't sniff out your public ip, the outside is silent. The rest is in the window"
+
+[wifi]
+# {ssid} {security} the security, {signal} strength in percent
+weak = "Wifi {ssid} runs on {security}. Any neighbour with a bit of effort can read that"
+fine = "Wifi {ssid}, signal {signal} %, {security}. Solid"
+denied = "Windows won't tell me the wifi name until you allow location. How is in the window"
+off = "You're not on wifi right now. A cable is a cable"
+none = "No wifi here. An honest cable, respect"
+
+[share]
+# Sharing the Wi-Fi as a QR code. {ssid}
+Shared = "Scan it with a phone and you're on {ssid}. Click and the password is on the clipboard"
+Open = "{ssid} is open, no password. The code still saves some typing"
+NeedsAdmin = "Windows hand over the password to {ssid} only to an admin. Run me as admin from the menu"
+Enterprise = "{ssid} is a company network, everyone signs in with their own account. Nothing to share"
+Unknown = "Can't read the profile for {ssid}. Windows keep quiet ¯\\_(ツ)_/¯"
+
+[neighbours]
+none = "I see no local network to knock on"
+alone = "Nobody but you answered. Quiet as a sunday on the estate"
+# {machines} from [neighbours.machines]
+list = "{machines}. The list is in the window"
+# {machines} {random} how many of them have a random MAC
+random = "{machines}. {random} with a random MAC, phones most likely"
+
+[neighbours.machines]
+one = "1 other machine here"
+many = "{n} other machines here"
+
+[listening]
+# {total} things listening, {exposed} of them to the network
+local = "Open: {total}, all of it at home on localhost. Relax"
+exposed = "Open: {total}, {exposed} of them to the network. The list is in the window"
+
+[usage]
+# {who} {rate}
+top = "In the last minute {who} ate the most, {rate}. Greedy guts"
+none = "Almost nothing crossed the wire in the last minute"
+
+[calls]
+none = "Nobody called home today. Nobody I know by name, anyway ¯\\_(ツ)_/¯"
+# {who} the most, {n} how many times, {programs} from [calls.programs]
+top = "{who} tells on you the most, {n} times today. {programs} called home"
+
+[calls.programs]
+one = "1 program"
+many = "{n} programs"
+
+[ping]
+no_network = "You're not on any network"
+no_gateway = "The gateway doesn't answer. The trouble is at home: cable, wifi or router"
+no_internet = "The gateway answers, silence past it. The router or your provider"
+no_dns = "The internet works, names don't. It's DNS"
+# {gateway} and {internet} round trips in ms
+fine = "Gateway {gateway} ms, internet {internet} ms. The wire holds"
+fine_no_gateway = "Internet {internet} ms. The gateway ignores pings, but the wire holds"
+
+# ---------------------------------------------------------------- file check
+
+[inspect]
+title = "File check"
+busy = "Let's see. Reading its papers"
+# {more} how many more files came along
+more = "Only the first was looked at. Hand me the other {more} one by one"
+
+[inspect.label]
+file = "file"
+size = "size"
+signature = "signature"
+origin = "origin"
+
+[inspect.broken]
+# Why a signature does not hold. Filled in for {why}.
+Tampered = "the file changed after it was signed"
+Distrusted = "the certificate is on the blacklist"
+Expired = "the certificate has expired"
+UntrustedRoot = "signed by an authority this computer does not trust"
+Other = "does not hold up"
+
+[inspect.signature]
+# {signer} who signed, {why} from [inspect.broken]
+valid = "valid, {signer}"
+valid_catalog = "valid, {signer} (windows catalog)"
+# Where programs carry no signature: the package the file came in.
+valid_package = "from the package {signer}"
+broken = "invalid: {why}"
+broken_by = "invalid: {why}, {signer}"
+unsigned = "none"
+unchecked = "could not be checked"
+not_signable = "this kind of file carries none"
+
+[inspect.origin]
+none = "no download mark"
+# {zone} from [inspect.zone], {host} where from
+host = "{zone}, {host}"
+
+[inspect.zone]
+0 = "this computer"
+1 = "local network"
+2 = "trusted sites"
+internet = "the internet"
+
+[dropped]
+in_cloud = "That file only lives in the cloud. Download it and I'll look it over"
+folder = "That's a folder. Give me one file, not the whole cellar"
+unreadable = "Can't read that. It's locked, or gone already"
+# Filled in for {host} when it is not known.
+the_internet = "The internet"
+# {signer}
+valid = [
+  "Its papers are in order. Signed by {signer}",
+  "The signature holds, {signer}. The hash is in the bubble",
+]
+# The same where nothing is signed and a package vouches for the file.
+valid_package = [
+  "Its papers are in order. It came in the package {signer}",
+  "A package put this here, {signer}. The hash is in the bubble",
+]
+fake = "The signature doesn't hold. Someone's been at this file, or it's a fake. Don't run it"
+# {why} from [inspect.broken]
+broken = "There is a signature, but it doesn't hold: {why}"
+unchecked = "Couldn't check the signature ¯\\_(ツ)_/¯ another program is probably holding the file"
+# {host} where it was downloaded from
+runnable_from = "Runnable, from {host}, and no papers. Find out who made it before you run it"
+runnable = "Runnable and unsigned. Might mean nothing, but it has no papers"
+unsigned = "Unsigned. The hash is in the bubble if you want to check it somewhere"
+downloaded_from = "Downloaded from {host}. This kind carries no signature, the hash is in the bubble"
+not_signable = "This kind carries no signature. The hash is in the bubble"

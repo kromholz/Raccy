@@ -1,0 +1,207 @@
+# How Raccy behaves, in numbers. The words are in voice/; this is the rest.
+#
+# Built into the program like the voice files: change a value, `cargo build`.
+# `cargo test` fails when a key is missing, misspelt or of the wrong kind.
+#
+# Units, by the end of the name
+#   _secs     seconds
+#   _frames   animation frames, ten a second
+#   _bps      bytes a second, both ways together
+#   _px       sprite pixels (the window is 64 x 60 of them)
+#   _hour     local clock hour, 0 to 23
+#   one_in_*  a chance: once in this many frames or seconds, on average
+# Numbers with a decimal point must keep it (6.0, not 6).
+
+# ---------------------------------------------------------------- the pet
+
+[pet]
+# Below this a second of traffic is not food: the background trickle of an
+# idle machine. Above it, every doubling feeds him food_per_doubling percent.
+food_line_bps = 65536
+food_per_doubling = 0.012
+# Below this the wire counts as quiet: he stops chewing, and dozes off after
+# asleep_after_secs of it.
+quiet_line_bps = 4096
+asleep_after_secs = 180
+# Awake, full to empty in this many hours without food.
+hours_to_empty = 6.0
+# Asleep or closed, a night of eight hours costs this many percent.
+night_cost_percent = 5.0
+# Delighted to bored in this many hours without anything new.
+hours_to_bored = 1.0
+# A kind of traffic counts as new again after this long away.
+novelty_secs = 600
+# Eating this fast while nearly full: stuffed.
+stuffed_bps = 20971520
+# Closing the app never starves him: satiety and mood stop falling here.
+offline_satiety_floor = 5.0
+offline_mood_floor = 20.0
+# Watched time, not calendar time, in which new programs are learned quietly.
+learning_secs = 28800
+# A host seen on this many different days is a regular.
+regular_days = 3
+# Well-fed days to each next stage: fence, sewer hacker, legend of the slum.
+stage_days = [3, 14, 60]
+# A day counts as well fed after this long awake and at least this full.
+fed_day_secs = 3600
+fed_satiety = 50.0
+# A starving day tears an ear; well-fed days mend it.
+starving_days_to_tear = 1.0
+fed_days_to_mend = 2.0
+
+# ---------------------------------------------------------------- what he does all day
+
+[life]
+# Between idle moments (a look around, a yawn, a hobby) he waits between these,
+# counted while he has nothing else going on.
+idle_every_frames = [80, 250]
+# What an idle moment is, in shares: a look to either side, a yawn, a stretch,
+# and the hobbies: soldering, samizdat, a handheld game, a snack.
+idle_mix = { look_left = 3, look_right = 3, yawn = 1, stretch = 1, tinker = 2, read = 2, game = 2, snack = 2 }
+# Naps last between these, and come after this long without you, with a
+# chance each second; sooner at night.
+nap_min_secs = 120
+nap_max_secs = 480
+nap_idle_day_secs = 600
+nap_one_in_day_secs = 1800
+nap_idle_night_secs = 120
+nap_one_in_night_secs = 600
+night_from_hour = 22
+night_until_hour = 6
+# The visor rests up on the hat for a while, then comes down for a scan.
+visor_up_frames = [450, 1200]
+visor_down_frames = [150, 400]
+# How long a scratch shows, and clicks this close together count as one petting.
+petted_frames = 15
+stroke_window_frames = 30
+
+[mute]
+# "Until morning" means until this hour.
+morning_hour = 7
+
+# ---------------------------------------------------------------- talking
+
+[talk]
+# How long a line stays up, a warning longer, and the least gap between lines.
+line_secs = 6
+warn_secs = 10
+cooldown_secs = 8
+# Even a warning lets the previous line be read this long first.
+warn_gap_secs = 3
+# Wait this long for a name or late byte counts before speaking without them.
+name_wait_secs = 3
+# A burst: this fast, said at most this often, and put next to a connection
+# opened this soon before it. A destination with this share of the bytes owns it.
+spike_bps = 2097152
+spike_every_secs = 120
+spike_cause_secs = 10
+owner_share = 0.8
+# His appetite: the traffic averaged over this long. A real feed, a big one,
+# and a trickle, by that average.
+appetite_secs = 30.0
+feast_bps = 262144
+big_feast_bps = 1048576
+trickle_bps = 32768
+# Seconds between remarks on connections, by appetite: sooner the more he eats.
+chatter_big_feast_secs = 45
+chatter_feast_secs = 60
+chatter_trickle_secs = 90
+chatter_quiet_secs = 150
+# A real feed this long with nothing new gets a word about the meal, at most this often.
+feast_hold_secs = 20
+feast_every_secs = 300
+# The same program opening the same kind again, or the same service, is only news after this.
+repeat_every_secs = 1800
+service_every_secs = 1200
+# After a finding about a connection, plain chatter about it waits this long.
+subject_quiet_secs = 120
+# The same finding again only after this long, restarts included.
+warn_repeat_secs = 21600
+note_repeat_secs = 86400
+# A service still listening to the network is brought up again after this long.
+exposed_remind_secs = 86400
+exposed_note_remind_secs = 604800
+# Findings nobody got to hear are old news after this long; the journal has them.
+note_stale_secs = 600
+warn_stale_secs = 10800
+# No keyboard or mouse for this long holds findings back.
+hold_idle_secs = 60
+# Moods, the summary of what is open, and chatter into the quiet.
+moan_every_secs = 120
+summary_every_secs = 1800
+lore_every_secs = 600
+lore_quiet_secs = 120
+
+# ---------------------------------------------------------------- watching
+
+[watch]
+# A beacon: this many opens at a steady interval between these, with the
+# spread of the intervals under this share of their mean.
+beacon_opens = 6
+beacon_min_secs = 20.0
+beacon_max_secs = 3600.0
+beacon_jitter = 0.1
+# A scan: this many machines, or ports on one, within the window.
+sweep_window_secs = 60
+sweep_hosts = 20
+sweep_ports = 15
+# A long upload: this fast for this long, told again this often.
+upload_bps = 1048576
+upload_secs = 20
+upload_again_secs = 300
+owner_share = 0.8
+# No keyboard or mouse for this long counts as away.
+away_secs = 600
+# Wait this long for a name before a finding says an address instead.
+name_wait_secs = 5
+# A remote session counts once it lasted this long, and ends after this long unseen.
+session_confirm_secs = 5
+session_grace_secs = 2
+# The internet gone this long, by Windows' own checks, is an outage worth a word.
+offline_after_secs = 10
+
+[lan]
+# The neighbour table is read this often. A network is learned quietly for
+# this much time spent on it: until then, new machines are not news.
+look_every_secs = 30
+learning_secs = 21600
+# The same machines behind a new gateway MAC count as a new router only after
+# this many looks in a row; the old MAC answering again before then is a warning.
+new_gateway_looks = 10
+
+# ---------------------------------------------------------------- moving about
+
+[roam]
+# A patrol, a wish to sit on a window, and a trip to another monitor, about
+# once in this many frames.
+patrol_one_in_frames = 4800
+sit_one_in_frames = 3000
+travel_one_in_frames = 12000
+# How far a patrol goes, and how long he pauses at its end.
+patrol_min_px = 150
+patrol_max_px = 500
+pause_frames = 20
+# How long he sits, and how long a wish to sit waits for a window to come up.
+sit_min_frames = 1200
+sit_max_frames = 3000
+sit_wish_frames = 1200
+# Fullscreen must last this long before he hides or comes out, and he says
+# why for this long before he goes.
+settle_frames = 15
+announce_frames = 40
+# Walking, jumping, climbing out and sinking down a pipe, in sprite pixels a frame.
+walk_step_px = 2
+jump_step_px = 6
+jump_min_frames = 5
+jump_max_frames = 20
+jump_height_px = 10
+climb_step_px = 2
+sink_step_px = 3
+sink_min_frames = 8
+sink_max_frames = 16
+
+[scene]
+# Bits fly only on a real feed (talk.feast_bps), timed to his bites. Above this
+# they are big, and a second this heavy makes the picture glitch.
+big_bits_bps = 1048576
+glitch_bps = 2097152

@@ -1,0 +1,469 @@
+# What Raccy recognises on the wire: well-known services by the domains they
+# use and the programs that are theirs, names that are private, and the lists
+# the watch works from. Built into the program like voice/ and tuning.toml:
+# change a list, `cargo build`. `cargo test` fails on a service name that does
+# not exist, a domain or program listed twice, and a service with no voice.
+#
+# Domains match whole labels from the end, the longest first: drive.google.com
+# is GoogleDrive although google.com is Google, and notgithub.com is not GitHub.
+# Programs match the executable's name without .exe, in lowercase. A service's
+# name is its name in the [service] section of the voice files.
+
+# Words that mark a name private wherever they appear in it: never named.
+private_words = ["bank", "banka", "pojistovna", "porn", "xxx", "onlyfans", "tinder", "badoo", "seznamka"]
+# Words in a name that give away a call home: telemetry, crash reports, usage analytics.
+calls_home_words = ["telemetry", "analytics", "metrics", "crashlytics", "crash-report", "sentry", "bugsnag", "appcenter", "app-measurement", "tracking", "beacons"]
+
+# Plain http that is plain on purpose: revocation lists and OCSP from the
+# certificate authorities, and Windows checking connectivity and updates.
+[plain_http]
+# Names starting with these labels.
+labels = ["ocsp.", "ocsp2.", "crl.", "crl3.", "crl4."]
+# Names ending in these domains.
+suffixes = ["microsoft.com", "windowsupdate.com", "msftconnecttest.com", "msftncsi.com", "digicert.com", "lencr.org", "sectigo.com", "usertrust.com", "comodoca.com", "globalsign.com", "globalsign.net", "entrust.net", "identrust.com", "pki.goog", "amazontrust.com", "godaddy.com", "verisign.com"]
+
+[watch]
+# System tools that rarely have business on the internet: a warning.
+system_tools = ["rundll32", "regsvr32", "mshta", "certutil", "bitsadmin", "wscript", "cscript", "msbuild", "installutil", "regasm", "regsvcs", "cmstp", "calc"]
+# Shells go online for plenty of honest reasons, but it is still worth a word.
+shells = ["powershell", "pwsh", "cmd"]
+# Top-level domains that cost next to nothing, where scams like to live.
+cheap_tlds = ["xyz", "top", "zip", "mov", "click", "icu", "buzz", "rest", "cfd", "sbs", "cyou", "monster"]
+# Programs whose job is to speak DNS to outside resolvers ("" is the system itself).
+resolvers = ["", "windows", "svchost", "dnscache", "nordvpn-service", "tailscaled"]
+# The system's own network chatter, whose plain http is the operating system
+# checking itself ("" is the system itself, when it would not say which program).
+system_itself = ["windows", "svchost", "networkmanager", "gnome-shell", "nm-online", "systemd-resolved", "connman", "ubuntu-advantage"]
+# Mining pools: ports and words in their names.
+mining_ports = [3333, 14433, 14444, 45700]
+mining_words = ["nicehash", "xmrpool", "minexmr", "moneroocean", "supportxmr", "2miners", "f2pool", "ethermine", "unmineable", "nanopool"]
+# Tor relays and directories.
+tor_ports = [9001, 9030]
+
+# What kind of program a window he sits on belongs to, by the executable's name
+# without .exe, in lowercase; the kinds' lines are [sits_on] in the voice files.
+# Any other program gets his plain lines about sitting down.
+[seat]
+Browser = ["msedge", "chrome", "firefox", "opera", "brave", "vivaldi", "arc", "librewolf", "zen", "waterfox"]
+Code = ["code", "cursor", "windsurf", "devenv", "idea64", "rider64", "pycharm64", "clion64", "webstorm64", "rustrover64", "goland64", "zed", "sublime_text", "notepad++", "nvim-qt"]
+Terminal = ["windowsterminal", "wezterm-gui", "alacritty", "cmd", "powershell", "pwsh", "conhost", "mintty"]
+Chat = ["discord", "slack", "ms-teams", "teams", "telegram", "signal", "whatsapp", "element", "claude", "chatgpt"]
+Mail = ["outlook", "olk", "thunderbird", "mailspring"]
+Office = ["winword", "excel", "powerpnt", "onenote", "soffice", "notion", "obsidian"]
+Media = ["vlc", "mpc-hc64", "mpc-be64", "spotify", "potplayermini64", "obs64", "audacity"]
+Games = ["steam", "steamwebhelper", "epicgameslauncher", "battle.net", "riotclientux", "galaxyclient", "playnite.desktopapp"]
+Files = ["explorer", "totalcmd64", "doublecmd"]
+Design = ["photoshop", "illustrator", "figma", "blender", "krita", "inkscape", "aseprite"]
+
+# ---------------------------------------------------------------- services
+
+[[service]]
+name = "MsTelemetry"
+domains = ["events.data.microsoft.com", "telemetry.microsoft.com", "data.microsoft.com"]
+processes = ["compattelrunner", "devicecensus"]
+
+[[service]]
+name = "WindowsUpdate"
+domains = ["windowsupdate.com", "update.microsoft.com", "delivery.mp.microsoft.com"]
+
+[[service]]
+name = "Microsoft"
+domains = ["microsoft.com", "windows.com", "live.com", "office.com", "office.net", "msn.com", "bing.com", "azure.com", "azureedge.net"]
+
+[[service]]
+name = "OneDrive"
+domains = ["onedrive.com", "onedrive.live.com", "sharepoint.com"]
+processes = ["onedrive"]
+
+[[service]]
+name = "Teams"
+domains = ["teams.microsoft.com", "teams.live.com"]
+processes = ["ms-teams", "teams"]
+
+[[service]]
+name = "Google"
+domains = ["google.com", "googleapis.com", "gstatic.com", "1e100.net"]
+
+[[service]]
+name = "YouTube"
+domains = ["googlevideo.com", "youtube.com", "ytimg.com"]
+
+[[service]]
+name = "Trackers"
+domains = ["doubleclick.net", "googlesyndication.com", "google-analytics.com", "googletagmanager.com", "app-measurement.com", "scorecardresearch.com", "hotjar.com", "clarity.ms", "sentry.io", "segment.io", "mixpanel.com"]
+
+[[service]]
+name = "GitHub"
+domains = ["github.com", "githubusercontent.com"]
+
+[[service]]
+name = "Claude"
+domains = ["anthropic.com", "claude.ai"]
+processes = ["claude"]
+
+[[service]]
+name = "OpenAi"
+domains = ["openai.com", "chatgpt.com"]
+processes = ["chatgpt"]
+
+[[service]]
+name = "Cloudflare"
+domains = ["cloudflare.com", "cloudflare-dns.com"]
+
+[[service]]
+name = "Aws"
+domains = ["amazonaws.com", "cloudfront.net"]
+
+[[service]]
+name = "Akamai"
+domains = ["akamai.net", "akamaiedge.net", "akamaitechnologies.com"]
+
+[[service]]
+name = "Steam"
+domains = ["steampowered.com", "steamcontent.com", "steamserver.net"]
+processes = ["steam", "steamwebhelper"]
+
+[[service]]
+name = "Discord"
+domains = ["discord.com", "discord.gg", "discordapp.net"]
+processes = ["discord"]
+
+[[service]]
+name = "Spotify"
+domains = ["spotify.com", "scdn.co"]
+processes = ["spotify"]
+
+[[service]]
+name = "Netflix"
+domains = ["netflix.com", "nflxvideo.net"]
+
+[[service]]
+name = "Signal"
+domains = ["signal.org"]
+processes = ["signal"]
+
+[[service]]
+name = "WhatsApp"
+domains = ["whatsapp.net", "whatsapp.com"]
+processes = ["whatsapp"]
+
+[[service]]
+name = "Telegram"
+domains = ["telegram.org"]
+processes = ["telegram"]
+
+[[service]]
+name = "Slack"
+domains = ["slack.com"]
+processes = ["slack"]
+
+[[service]]
+name = "Zoom"
+domains = ["zoom.us"]
+processes = ["zoom"]
+
+[[service]]
+name = "Meta"
+domains = ["facebook.com", "fbcdn.net", "instagram.com"]
+
+[[service]]
+name = "TikTok"
+domains = ["tiktokcdn.com", "tiktok.com"]
+
+[[service]]
+name = "Apple"
+domains = ["apple.com", "icloud.com"]
+
+[[service]]
+name = "NordVpn"
+domains = ["nordvpn.com"]
+processes = ["nordvpn-service", "nordvpn"]
+
+[[service]]
+name = "Tailscale"
+domains = ["tailscale.com", "tailscale.io"]
+processes = ["tailscaled", "tailscale-ipn"]
+
+[[service]]
+name = "Tor"
+processes = ["tor"]
+
+[[service]]
+name = "Seznam"
+domains = ["seznam.cz", "szn.cz"]
+
+[[service]]
+name = "RustCrates"
+domains = ["crates.io", "rust-lang.org"]
+processes = ["cargo"]
+
+[[service]]
+name = "Mozilla"
+domains = ["mozilla.org", "mozilla.net", "mozilla.com", "firefox.com"]
+
+[[service]]
+name = "Proton"
+domains = ["proton.me", "protonmail.com", "protonvpn.com"]
+processes = ["protonvpn", "protonvpnservice"]
+
+[[service]]
+name = "Mullvad"
+domains = ["mullvad.net"]
+processes = ["mullvad-daemon", "mullvad vpn"]
+
+[[service]]
+name = "Dropbox"
+domains = ["dropbox.com", "dropboxapi.com"]
+processes = ["dropbox"]
+
+[[service]]
+name = "GoogleDrive"
+domains = ["drive.google.com", "docs.google.com"]
+processes = ["googledrivefs"]
+
+[[service]]
+name = "Gemini"
+domains = ["gemini.google.com"]
+
+[[service]]
+name = "Copilot"
+domains = ["copilot.microsoft.com", "githubcopilot.com"]
+
+[[service]]
+name = "Perplexity"
+domains = ["perplexity.ai"]
+
+[[service]]
+name = "Mistral"
+domains = ["mistral.ai"]
+
+[[service]]
+name = "DeepSeek"
+domains = ["deepseek.com"]
+
+[[service]]
+name = "Grok"
+domains = ["grok.com", "x.ai"]
+
+[[service]]
+name = "HuggingFace"
+domains = ["huggingface.co", "hf.co"]
+
+[[service]]
+name = "Ollama"
+domains = ["ollama.com"]
+processes = ["ollama", "ollama app"]
+
+[[service]]
+name = "Twitch"
+domains = ["twitch.tv", "ttvnw.net", "jtvnw.net"]
+
+[[service]]
+name = "Reddit"
+domains = ["reddit.com", "redd.it", "redditmedia.com"]
+
+[[service]]
+name = "Twitter"
+domains = ["x.com", "twitter.com", "twimg.com"]
+
+[[service]]
+name = "Bluesky"
+domains = ["bsky.app", "bsky.social"]
+
+[[service]]
+name = "LinkedIn"
+domains = ["linkedin.com", "licdn.com"]
+
+[[service]]
+name = "EpicGames"
+domains = ["epicgames.com", "unrealengine.com"]
+processes = ["epicgameslauncher"]
+
+[[service]]
+name = "BattleNet"
+domains = ["battle.net", "blizzard.com"]
+processes = ["battle.net"]
+
+[[service]]
+name = "Riot"
+domains = ["riotgames.com", "riotcdn.net"]
+processes = ["riotclientservices"]
+
+[[service]]
+name = "Xbox"
+domains = ["xboxlive.com", "xbox.com"]
+
+[[service]]
+name = "Ea"
+domains = ["ea.com"]
+processes = ["eadesktop"]
+
+[[service]]
+name = "Ubisoft"
+domains = ["ubisoft.com", "ubi.com"]
+processes = ["upc", "ubisoftconnect"]
+
+[[service]]
+name = "Gog"
+domains = ["gog.com"]
+processes = ["galaxyclient"]
+
+[[service]]
+name = "Wargaming"
+domains = ["wargaming.net", "worldoftanks.eu"]
+processes = ["wgc"]
+
+[[service]]
+name = "Adobe"
+domains = ["adobe.com", "adobe.io", "typekit.net"]
+processes = ["creative cloud", "adobe desktop service"]
+
+[[service]]
+name = "JetBrains"
+domains = ["jetbrains.com"]
+processes = ["jetbrains-toolbox"]
+
+[[service]]
+name = "VsCode"
+domains = ["marketplace.visualstudio.com", "vscode-cdn.net", "vscode.dev"]
+processes = ["code"]
+
+[[service]]
+name = "Npm"
+domains = ["npmjs.org", "npmjs.com"]
+
+[[service]]
+name = "PyPi"
+domains = ["pypi.org", "pythonhosted.org"]
+
+[[service]]
+name = "DockerHub"
+domains = ["docker.io", "docker.com"]
+processes = ["docker desktop", "com.docker.backend"]
+
+[[service]]
+name = "AnyDesk"
+domains = ["anydesk.com"]
+processes = ["anydesk"]
+
+[[service]]
+name = "TeamViewer"
+domains = ["teamviewer.com"]
+processes = ["teamviewer", "teamviewer_service"]
+
+[[service]]
+name = "RustDesk"
+domains = ["rustdesk.com"]
+processes = ["rustdesk"]
+
+[[service]]
+name = "Nvidia"
+domains = ["nvidia.com", "geforce.com"]
+processes = ["nvcontainer", "nvidia app"]
+
+[[service]]
+name = "Antivirus"
+domains = ["avast.com", "avcdn.net", "avg.com", "eset.com", "kaspersky.com", "kaspersky-labs.com", "bitdefender.com", "mcafee.com", "norton.com"]
+processes = ["avastsvc", "avgsvc", "ekrn", "avp", "bdservicehost"]
+
+[[service]]
+name = "Plex"
+domains = ["plex.tv", "plex.direct"]
+processes = ["plex media server"]
+
+[[service]]
+name = "Syncthing"
+domains = ["syncthing.net"]
+processes = ["syncthing"]
+
+[[service]]
+name = "Torrent"
+processes = ["qbittorrent", "utorrent", "bittorrent", "transmission-qt", "deluge"]
+
+[[service]]
+name = "Wikipedia"
+domains = ["wikipedia.org", "wikimedia.org"]
+
+[[service]]
+name = "CzechNews"
+domains = ["ceskatelevize.cz", "ct24.cz", "irozhlas.cz", "novinky.cz", "seznamzpravy.cz", "idnes.cz", "aktualne.cz", "denikn.cz"]
+
+[[service]]
+name = "Alza"
+domains = ["alza.cz"]
+
+[[service]]
+name = "ChinaShops"
+domains = ["aliexpress.com", "alicdn.com", "temu.com", "shein.com"]
+
+[[service]]
+name = "Yandex"
+domains = ["yandex.ru", "yandex.net", "yandex.com"]
+
+[[service]]
+name = "Vk"
+domains = ["vk.com", "userapi.com"]
+
+[[service]]
+name = "DuckDuckGo"
+domains = ["duckduckgo.com"]
+
+[[service]]
+name = "Viber"
+domains = ["viber.com"]
+processes = ["viber"]
+
+[[service]]
+name = "Matrix"
+domains = ["matrix.org", "element.io"]
+processes = ["element"]
+
+[[service]]
+name = "Webex"
+domains = ["webex.com"]
+processes = ["ciscocollabhost", "webex"]
+
+[[service]]
+name = "GoogleMeet"
+domains = ["meet.google.com"]
+
+[[service]]
+name = "Xiaomi"
+domains = ["xiaomi.com", "xiaomi.net", "mi.com"]
+
+[[service]]
+name = "Tuya"
+domains = ["tuya.com", "tuyaeu.com"]
+
+[[service]]
+name = "Hue"
+domains = ["meethue.com"]
+
+[[service]]
+name = "Sonos"
+domains = ["sonos.com"]
+
+[[service]]
+name = "HomeAssistant"
+domains = ["home-assistant.io", "nabu.casa"]
+
+[[service]]
+name = "Mega"
+domains = ["mega.nz", "mega.co.nz"]
+
+[[service]]
+name = "WeTransfer"
+domains = ["wetransfer.com"]
+
+[[service]]
+name = "UlozTo"
+domains = ["uloz.to"]
+
+[[service]]
+name = "FoodDelivery"
+domains = ["wolt.com", "foodora.cz", "damejidlo.cz"]
+
+# Banks, payments, health insurers and health records: recognised so they are never named.
+[[service]]
+name = "Private"
+domains = ["csob.cz", "kb.cz", "csas.cz", "ceskasporitelna.cz", "fio.cz", "rb.cz", "airbank.cz", "moneta.cz", "mbank.cz", "unicreditbank.cz", "revolut.com", "paypal.com", "wise.com", "vzp.cz", "zpmvcr.cz", "ozp.cz", "cpzp.cz", "nzip.cz", "sukl.cz", "mojedatovaschranka.cz", "identitaobcana.cz", "portal.gov.cz"]

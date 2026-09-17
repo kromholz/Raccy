@@ -1,0 +1,1552 @@
+# Jak s tím zacházet
+# - Klíč má buď jednu hlášku, nebo seznam variant v [ ]. Z variant si
+#   pokaždé vybere jednu, ať nemluví pořád stejně.
+# - {slovo} je proměnná, kterou Raccy doplní. Nad každou sekcí je napsané,
+#   které proměnné tam jsou.
+# - Věty začínaj velkým písmenem a končej tečkou, otazníkem nebo vykřičníkem.
+#   Hláška, co začíná proměnnou, se píše proměnnou; velký písmeno tam doplní
+#   program, až to Raccy řekne.
+
+# Proměnné, co se opakujou
+#   {who}    program, třeba msedge; bez jména „systémovej proces“
+#   {dest}   kam spojení vede: jméno nebo adresa, v lanu s dovětkem z [words]
+#   {what}   druh spojení, viz [kind]
+#   {port}   číslo portu
+#   {rate}   rychlost, třeba 2.1 MB/s
+#   {app}    program, co jede přes celou obrazovku
+#   {ssid}   jméno wifi
+
+# ---------------------------------------------------------------- slova
+
+[words]
+# Místo cíle, který Raccy nejmenuje (banky, zdraví).
+hidden = "někam soukromě"
+# Program, jehož jméno Windows neprozradí.
+system_process = "systémovej proces"
+# Program přes celou obrazovku, když nemá jméno.
+something = "něco"
+# Místo cíle, když spojení vede na vlastní adresu tohohle počítače.
+this_pc = "tenhle počítač"
+# {name} adresa nebo jméno stroje v místní síti
+on_lan = "{name} v lanu"
+# {name} jméno stroje, {ip} jeho adresa
+named = "{name} ({ip})"
+# {ip} adresa, {mac} fyzická adresa
+unnamed = "{ip}, mac {mac}"
+
+# Úplně první spuštění: pět řádků, každý nejvýš 30 znaků.
+intro = "Čau, sem Raccy. Žeru pakety\nVšechno zůstává u tebe\nNic o tobě nikam neposílám\nNejsem práskač, jen hlídám\nMenu pravým, drbání levým"
+
+# ---------------------------------------------------------------- pozdravy
+
+[greeting]
+morning = [
+  "Dobrý ráno, kámo. Smog se zvedá, kafe v plecháčku, drát je čerstvej",
+  "Ráno na sídlišti. Výtahy zase nejedou, pakety jo",
+  "Vstávej. Tajemník na hologramu kyne už od šesti a nikdo neví komu",
+  "Ráno. Rozhlas na sloupu mlčí, tak budu mluvit já",
+]
+day = [
+  "Čest práci. Já žeru pakety, ne směrnice",
+  "Hele, sem tu. Co teče po drátě?",
+  "Vekslák bitů otevírá krám. Bony nebereme, fronty nestavíme",
+  "Zdravím. Kafe teplý, drát čistej, jdem na to",
+]
+evening = [
+  "Dobrej večer. Lampy na sídlišti blikaj a drát se rozjíždí",
+  "Večer. V paneláku řve televize a pakety se sypou k oknům",
+  "Večerní směna. Kafe dopitý, smog houstne, já se teprv rozjíždím",
+]
+night = [
+  "Noční směna. Rudej měsíc visí nad paneláky a já mám hlad",
+  "V noci je drát líp slyšet. Fízlové spí, pašeráci ne",
+  "Noc je prej ještě mladá. Já taky, fakt",
+]
+
+# ---------------------------------------------------------------- spojení
+
+[kind]
+# Druh spojení, jak se dosadí za {what}. {port} jen u other.
+web = "https"
+plain_web = "http bez šifrování"
+ssh = "ssh"
+remote_desktop = "vzdálenou plochu"
+winrm = "winrm"
+dns = "dns"
+mail = "poštu"
+file_share = "sdílený soubory"
+database = "databázi"
+git = "git"
+chat = "chat"
+call = "hovor"
+game = "hru"
+other = "port {port}"
+
+[taste]
+# Dovětek za hláškou o spojení, jak ta data chutnaj. Začíná tečkou.
+ssh = ". Křupe jak suchary z přídělu"
+git = ". Čerstvej samizdat, mňam"
+plain_web = ". Čte to každej cenzor po cestě. Fuj"
+remote = ". Hele, šťourá do jiný mašiny"
+database = ". Syrový řádky, slintám"
+other = ". Tohle sem eště nežral, ochutnám"
+
+[connection]
+# {who} {what} {dest} a {taste}, dovětek z [taste] (nebo nic)
+opened = [
+  "{who} otevírá {what} na {dest}{taste}",
+  "{who} leze na {dest} přes {what}{taste}",
+  "{who} ťuká na {dest}, {what}{taste}",
+  "Hele, {who} si to šine na {dest}, {what}{taste}",
+  "{who} posílá kurýra na {dest}, {what}{taste}",
+]
+# Program jde na svou vlastní doménu. {who} {what} {taste}
+calls_home = [
+  "{who} volá domů, {what}{taste}",
+  "{who} se hlásí na mateřský stanici, {what}{taste}",
+  "{who} běží za maminkou, {what}{taste}",
+]
+# Soukromej cíl, co Raccy nejmenuje. {who}
+private = [
+  "{who} jde někam soukromě. Nekoukám, nejsem KGB",
+  "{who} řeší něco osobního. Dělám, že nevidím",
+  "{who} má soukromou věc. Do složky to nepíšu, nejsem práskač",
+]
+# Štamgast: stránka navštívená víc dní. {who} {dest} {days} kolikátej den
+regular = [
+  "Starej známej {dest}. {who} tam chodí už {days}. Den",
+  "{dest} zase. Tady sme štamgasti, kámo",
+  "{dest}. To je jasný, tady nás znaj",
+  "{dest}. Jak v nádražce, nalejou bez ptaní",
+]
+
+[summary]
+# Jednou za čas souhrn, poskládaný z kusů.
+# {open} počet otevřenejch spojení
+open = "{open} otevřenejch spojení"
+# {count} kolik z nich má {who}
+top = ", {count} z nich drží {who}"
+# {lan} kolik z nich zůstává v místní síti
+lan = ". {lan} zůstává doma v lanu"
+
+[traffic]
+# Náraz provozu. {rate}
+spike_in = [
+  "{rate} teče dovnitř. Nesu si lžíci",
+  "{rate} se valí do drátu jak voda z prasklý trubky v paneláku",
+  "{rate} dovnitř. Fakin hostina, nesu si talíř",
+]
+spike_out = [
+  "{rate} utíká ven. Kam tak spěcháš?",
+  "{rate} utíká ven jak zlato přes hranice",
+  "{rate} ven. Někdo stěhuje byt po drátě",
+]
+# Náraz s vlastníkem. {rate} {who} {dest}
+flow_in = [
+  "{who} tahá {rate} z {dest}",
+  "{who} hltá {rate} z {dest}. Nech mi taky",
+  "{who} cpe do sebe {rate} z {dest}, plnou hubou",
+]
+flow_out = [
+  "{who} posílá {rate} na {dest}",
+  "{who} odváží {rate} na {dest}. Snad jen zálohy",
+  "{rate} z {who} na {dest}. Kufry jedou ven",
+]
+# Připojí se za náraz. {who} {dest}
+right_after = ", hned po tom, co {who} otevřel {dest}"
+# Připojí se za náraz. {who} {n} počet spojení
+busiest = ". Nejvíc spojení drží {who}, {n}"
+# Delší pořádná hostina, když k ní není nic novýho. {rate} {who} od koho to jí
+feast = [
+  "{who} mi sype {rate}. Hostina jak na svatbě v kulturáku",
+  "{rate} od {who}. Žvejkám, nemluv na mě",
+  "{who} krmí vydatně, {rate}. Ještě přidat",
+]
+# Totéž, když není jasný, od koho. {rate}
+feast_plain = [
+  "{rate} na talíři. Konečně pořádná večeře",
+  "Drát teče {rate}. Žeru jak po přídělovým týdnu",
+  "{rate} v kuse. Tohle je hostina, ne svačina, kámo",
+]
+# Připojí se, když je Raccy přežranej.
+stuffed = ". Sem narvanej jak po zabijačce"
+
+# ---------------------------------------------------------------- nálady
+
+[mood]
+woke = [
+  "Provoz! Sem vzhůru, sem vzhůru!",
+  "Drát ožil. Jasně, vstávám",
+  "Něco se hejbe. Oči na stopkách jak hlídka na hranici",
+  "Kdo mě budí? Aha, pakety. To se odpouští",
+]
+# Usnul, protože na drátě nic neteče.
+dozed = [
+  "Na drátě ticho. Du chrápat",
+  "Nic neteče. Zalezu do kanálu",
+  "Ticho jak po zákazu vycházení. Dobrou",
+  "Noc je prej mladá. Já už ne, du spát",
+]
+# Jde si dát šlofíka, i když provoz teče.
+nap = [
+  "Dám si šlofíka. Vzbuď mě, kdyby hořelo",
+  "Na chvilku zavřu oči. Drát si pohlídá sám, snad",
+  "Siesta. I hacker z kanálu musí chrápat",
+]
+starving = [
+  "Umírám hlady. Na drátě nic k žrádlu, do prdele",
+  "Hlad jak za přídělovýho systému",
+  "Žaludek hlásí packet loss",
+  "Prázdno jak v sámošce před výplatou",
+  "Kručí mi v břiše jak starej modem",
+  "Ještě chvíli a začnu okusovat kabel od myši. Varoval sem tě",
+]
+hungry = [
+  "Dochází šťáva. Prostě něco stáhni",
+  "Hele, dal bych si pár mega, kámo",
+  "Nakrm mě, soudruhu. Fakt",
+  "Stojím frontu na data a pořád nic nepřivezli",
+  "Pusť nějaký video, ať mám co žvejkat",
+  "Trochu provozu by bodlo. I ping je lepší než nic",
+  "¯\\_(ツ)_/¯ drát je prázdnej, tak si aspoň olíznu tlapky",
+]
+bored = [
+  "Pořád to samý. Dej mi něco novýho, kámo",
+  "Samý https. Nuda jak na stranický schůzi, fakt",
+  "Hele, chci jinou chuť. Ssh, git, cokoliv",
+  "Pořád stejný pakety. Jak v závodní jídelně: knedlík, zelí, knedlík",
+  "Nuda. I sčítání lidu bylo zábavnější",
+  "Dneska furt jedno a to samý. Otevři něco divnýho",
+  "(╯°□°)╯︵ ┻━┻ zase ty samý pakety",
+]
+# Drbání, pár kliknutí.
+petted = [
+  "Hej, to lechtá",
+  "Drb drb. Dobrý, fakt",
+  "Neruš, počítám pakety. No dobře, ještě",
+  "Kvík",
+  "Za ušankou, jo, přesně tam",
+  "Hmm. Ještě chvilku",
+  "No jo, no jo. Taky tě mám rád, ty vořechu",
+]
+# Drbání, moc kliknutí za sebou.
+petted_too_much = [
+  "A dost, kurva! Přehryžu ti všecky kabely!",
+  "Tohle je obtěžování, hlásím to na uliční výbor",
+  "Ještě jednou a odpojím ti wifi",
+  "(╯°□°)╯︵ ┻━┻ dost drbání",
+  "Přestaň, nebo ti přejmenuju všechny soubory na final_final2",
+]
+# Pozdě v noci u počítače. {hour} hodina
+night_owl = [
+  "Je {hour} ráno a ty pořád klikáš. Noční tvor sem tady já",
+  "{hour}:00. I tajemník na hologramu už chrápe",
+  "{hour}:00 a ty pořád tady. Fakin noční směna",
+  "{hour}:00. Tohle je směna pro pašeráky, ne pro tebe",
+  "{hour}:00. Jdi spát, drát tu ráno bude taky, slibuju",
+]
+
+[hobby]
+tinker = [
+  "Pájím krabičku. Bude pípat a nikdo nebude vědět proč. Ani já",
+  "Letuju anténu z ramínka. Dosah na celý sídliště",
+  "Spravuju starej modem z kolektoru. Voní kalafunou, paráda",
+]
+read = [
+  "Čtu samizdat. Píšou tu, že šifrování je lidský právo. Podepisuju",
+  "Noviny z kolektoru. Inzerát: koupím paměť, platím hotově, neptám se",
+  "Listuju manuálem k ruskýmu routeru. Azbuka a schémata, pecka",
+]
+game = [
+  "Rychlá hra na kapesní konzoli. Kostky padaj jak normy z ministerstva",
+  "Hraju tetris. Rekord mám z osmdesátýho devátýho a ten nikdo nepřekoná",
+  "Vlk a vejce, vekslácká edice. Baterky vydržej věčnost",
+]
+snack = [
+  "Svačina. Pirožek z trafiky, pakety počkaj",
+  "Suchar z přídělu. Křupe líp než ssh",
+  "Chroupu semínka z parku. Nekoukej tak, nedám",
+]
+
+[level_up]
+1 = "Level up. Už nejsem mládě, sem vekslák. Bony nebereme"
+2 = "Level up, kurva. Kanálovej hacker, talířek na anténě chytá i SojuzNet"
+3 = "Legenda slumu. Kabát, kybernetická ruka a respekt celýho sídliště"
+
+# ---------------------------------------------------------------- povídání do ticha
+
+[lore]
+day = [
+  "Smog je dneska hustej jak packet loss",
+  "Rudej měsíc nad paneláky. Ping sedí",
+  "Tajemník na hologramu zase kyne. Prej ani nikdo neví, jestli ještě žije",
+  "V kolektorech pod sídlištěm je slyšet modem",
+  "Vekslák před sámoškou nabízel gigabajty. Padělky, samozřejmě",
+  "Kdo nešifruje, ten se rovnou hlásí na úřadě",
+  "Sbírám bity po popelnicích za panelákem. Dneska slušná úroda",
+  "Tady dole nevládne výbor, jen latence",
+  "Iddqd. Kdyby to fungovalo i na KGB",
+  "Algoritmus ti servíruje mrtvej obsah. Já žeru živý pakety",
+  "Nečekej, až ti někdo dá razítko. Prostě to spusť",
+  "Punk's not dead. Jenom se schovává v kanálech",
+  "Kafe v plecháčku a pár mega. Dokonalej zen",
+  "Prej se v kolektorech zase kšeftuje s čipama",
+  "Nad slumem kroužej korporátní drony. Mě nechytěj, sem rychlejší",
+  "Sovětskej modem v kanálu pořád pípá. Nikdo neví proč a nikdo se neptá",
+  "Lada pod oknem zase nechytla. Drát aspoň startuje na první dobrou",
+  "V SojuzNetu je všechno schválený. Proto tam nikdo nechodí",
+  "Tady se nic neplánuje na pět let dopředu. Tady se žere hned",
+  "Kvas do plechovky, pakety do žaludku",
+  "Samizdat dneska běhá rychlejc, než cenzura stíhá. Dobrá doba",
+  "Na nádraží prodávaj antény z ramínka. Prej chytaj i svobodnou evropu",
+  "Domovnice ví všechno o lidech, já všechno o paketech. Sme si kvit",
+  "Kdo má vlastní server, nemusí prosit o razítko",
+  "Šifruj, dokud můžeš. Pak šifruj ještě víc",
+  "V trafice prodávaj cigarety a ssh klíče. Klíče jsou dražší",
+  "Za garážema se zase letovalo. Voní to kalafunou",
+  "Ve výtahu smrdí ozon a někdo tam nechal flashku. Nesahej na to",
+  "Nejlepší firewall je zdravá paranoia",
+  "Rudej měsíc a zelenej terminál. Klasika",
+  "Tady dole se neplatí předplatný. Tady se kutí",
+]
+night = [
+  "Noční drát šumí jak svobodná evropa pod peřinou",
+  "V tuhle hodinu jezděj jen pašeráci a zálohy",
+  "Rudej měsíc je nejvejš. Pakety jsou řídký",
+  "Sídliště spí. Jenom hologram tajemníka bliká do tmy",
+  "V noci se samizdat šíří nejrychlejc. Cenzoři chrápou",
+  "V kolektoru kape voda do rytmu pingu",
+  "Noční autobus projel prázdnej. Jenom já a pakety",
+  "O půlnoci se zálohy stěhujou jak rodiny přes hranici",
+]
+
+# ---------------------------------------------------------------- pohyb
+
+[roam]
+patrol = [
+  "Du na obchůzku",
+  "Kontrola rajónu",
+  "Hele, jdu se projít po okraji",
+  "Obchůzka jak domovní důvěrník. Jenom nic nehlásím",
+  "Protáhnu si tlapky. Hned sem zpátky",
+  "Kouknu, co se šustne na kraji obrazovky",
+]
+sits = [
+  "Sednu si sem. Odsud je líp vidět na drát",
+  "Tady se sedí dobře. Nevadí, ne? A i kdyby",
+  "Hop. Výhled jak z paneláku",
+  "Sedím nahoře jak na tribuně na prvního máje",
+  "Tady nahoře je teplo. Okna hřejou",
+  "Sednu si ti na okno. Dělej, že tu nejsem",
+]
+# Před okno, na kterým sedí, přišlo jiný, přes něj: řekne si a sleze.
+covered = [
+  "Hej, uhni, nevidím. Tak já slezu",
+  "No jasně, strč mi okno před ksicht. Jdu dolů",
+  "Tudy nic neuvidím. Sesednu, nebudu tomu stát v cestě",
+  "Zakrytej jak plakát před volbama. Tak já radši slezu",
+  "Hele, tímhle oknem neprokouknu. Jdu si sednout jinam",
+]
+# Okno, na kterým seděl, mu zmizelo pod zadkem: zavřený, minimalizovaný, odtažený.
+fell = [
+  "Hej! Kdo mi vzal okno zpod zadku?",
+  "Au. To okno mělo bejt ještě chvíli tam",
+  "A je dole. Okno pryč, já na zemi. Klasika z paneláku",
+  "Šup a sem dole. Příště řekni, že to zavíráš",
+  "Tak to bylo rychlý. Zem je taky fajn, ne?",
+  "Padám! ...dobrý, tlapky celý. Jen ta hrdost",
+]
+back = [
+  "Vzduch čistej? Čistej",
+  "Už je po všem? Tak já zase vylezu",
+  "Nikdo mě neviděl, jasný?",
+  "Razie skončila. Lezu z úkrytu",
+  "Tak co, jak to dopadlo?",
+  "Zase sem tu. Dal sem si šlofíka pod okrajem",
+  "┬─┬ノ( ゜-゜ノ) tak, všechno zpátky na místo",
+]
+travel = [
+  "Du kolektorem na vedlejší monitor",
+  "Mizím do kanálu. Uvidíme se na jiný obrazovce",
+  "Přesun do jinýho sektoru. Drž mi místo",
+  "Jdu omrknout, co se děje na druhý obrazovce",
+]
+arrived = [
+  "Tak, jinej sektor. I tady tečou pakety",
+  "Vylezl sem z kanálu. Rozhlížím se po rajónu",
+  "Novej rajón. Zatím čistej",
+  "Tady je to jinší. I smog voní jinak",
+]
+# Něco jede přes celou obrazovku a vedle je volno. {app}
+escaping = [
+  "{app} jede přes celou obrazovku. Mizím kolektorem vedle",
+  "{app} zabral celou plochu. Jdu vedle, tam je volno",
+  "Celá obrazovka, {app}. Stěhuju se na druhej monitor, ať nepřekážím",
+]
+# Něco jede přes celou obrazovku a jinde volno není. {app}
+hiding = [
+  "{app} přes celou obrazovku. Mizím za okraj, ať ti nelezu do obrazu",
+  "{app} na celou plochu? Jasně, jdu se schovat. Zavolej, až bude hotovo",
+  "Celá obrazovka, {app}. Zalezu pod okraj jak do krytu civilní obrany",
+  "{app} přes celou obrazovku? (╯°□°)╯︵ ┻━┻ tak jo, jdu pod okraj",
+]
+
+# Sedí na okně programu, co zná, podle druhu z detect.toml. {app} ten program
+[sits_on]
+Browser = [
+  "Sednu si na {app}. Co to zas čteš za články?",
+  "Hop na prohlížeč. Sto otevřenejch tabů a žádnej dočtenej, že jo",
+  "Sedím na {app}. Odsud vidím, kam klikáš. Dělám, že ne",
+]
+Code = [
+  "Sednu si na {app}. Kóduješ? Nekoukám ti do kódu, jen trochu",
+  "Sedím na editoru. Borrow checker by mě stejně vyhodil",
+  "Hop na {app}. Jestli se to nezkompiluje, já to nebyl",
+]
+Terminal = [
+  "Sedím na terminálu. Zelený písmena, tak to mám rád",
+  "Hop na {app}. Jen nepiš rm -rf, sedím tu",
+  "Terminál, poctivá práce. Sednu si a koukám",
+]
+Chat = [
+  "Sednu si na {app}. Drbeš? Nečtu, přísahám",
+  "Sedím na chatu. Někdo zase píše a nic neříká",
+  "Hop na {app}. Pozdravuj ode mě",
+]
+Mail = [
+  "Sedím na poště. Sto nepřečtenejch a všechny důležitý",
+  "Hop na {app}. Další oběžník z ústředí?",
+  "Sednu si na maily. Odpovíš na to někdy?",
+]
+Office = [
+  "Sedím na {app}. Tabulky a papíry, byrokracie jak má bejt",
+  "Hop na kancelář. Razítko sem, podpis tam",
+  "Sednu si na {app}. Pětiletka se sama nenapíše",
+]
+Media = [
+  "Sedím na {app}. Pusť něco pořádnýho, třeba chiptune",
+  "Hop na přehrávač. Kino v obýváku a já v první řadě",
+  "Sednu si na {app}. Pusť to nahlas, drát to vydrží",
+]
+Games = [
+  "Sedím na {app}. Zase hraješ? Já si dám taky kolo",
+  "Hop na herní launcher. Knihovna plná a hraje se jedna hra",
+  "Sednu si na {app}. Jen ať to není na celou noc",
+]
+Files = [
+  "Sedím na průzkumníku. Hledáš ten soubor final_final2?",
+  "Hop na {app}. Složky ve složkách ve složkách",
+  "Sednu si na soubory. Uklidíš tu někdy?",
+]
+Design = [
+  "Sedím na {app}. Kreslíš? Nakresli mě, mám dobrej profil",
+  "Hop na grafiku. Pixely jsou můj živel",
+  "Sednu si na {app}. Jen mi nepřebarvuj visor",
+]
+
+# ---------------------------------------------------------------- služby
+# Jedna sekce na službu. Proměnné: {who} program, {dest} kam jde.
+
+[service]
+MsTelemetry = [
+  "{who} píše hlášení na centrálu, co tu děláš. Práskač",
+  "Telemetrie jede do Redmondu. Zasranej corpo, složka na tebe roste",
+  "{who} donáší. V Redmondu maj na tebe složku tlustší než KGB",
+  "{who} vyplňuje dotazník o tvým chování. Bez tvýho podpisu, jasně",
+]
+WindowsUpdate = [
+  "Přišla nová směrnice z Redmondu. Aktualizace",
+  "Windows fasujou nový nařízení. Restart podle pětiletky",
+  "Aktualizace. Ústřední výbor v Redmondu rozhodl za tebe",
+  "Redmond posílá záplaty. Restart přijde, až to budeš nejmíň čekat",
+]
+Microsoft = [
+  "{who} se hlásí na centrále v Redmondu",
+  "{who} podává hlášení soudruhům z Microsoftu",
+  "{who} nosí papíry na ústředí. Razítko, podpis, další okýnko",
+  "Microsoft. Velkej bratr s logem ve čtyřech barvách",
+]
+OneDrive = [
+  "Onedrive odváží tvoje papíry do archivu na centrále",
+  "Tvoje soubory jedou na převýchovu do cizího cloudu",
+  "Onedrive synchronizuje. Tvoje fotky teď bydlej i v cizím sklepě",
+  "Onedrive. Kopie všeho, pro jistotu i pro ně",
+]
+Teams = [
+  "Teams svolávaj stranickou schůzi. Chudáku",
+  "Porada v teamsech. Účast povinná, diskuze zakázaná",
+  "Teams. Zase někdo sdílí obrazovku se stovkou otevřenejch tabů",
+  "Teams bzučí. Další porada, co mohla bejt mail",
+]
+Google = [
+  "{who} šeptá Velkýmu Bratrovi",
+  "Google ví. Google vidí. Google nezapomíná",
+  "{who} nosí hlášení do googlu. Donášení se prej vyplácí",
+  "{who} se ptá googlu. Google odpoví a otázku si zapíše do složky",
+]
+YouTube = [
+  "Infovize z googlu. Co to zase čumíš?",
+  "Youtube lije video, bity jak kroupy",
+  "Youtube. Algoritmus už ví, co budeš chtít vidět. Ministerstvo propagandy by závidělo",
+  "Youtube. Ještě jedno video a du spát. Jo, jasně",
+]
+Trackers = [
+  "{who} pouští do domu práskače. Sledovačka na {dest}",
+  "Někdo si zapisuje, kam klikáš. {dest}, domovní důvěrník internetu",
+  "{dest} počítá tvoje kliky jak výbor hlasy. Vždycky to vyjde",
+  "{who} má v zádech práskače z {dest}. Blokovač by pomoh",
+]
+GitHub = [
+  "Github, sklad samizdatu. Čerstvej kód",
+  "{who} tahá kód z githubu. Samizdat v oběhu",
+  "Github. Někdo zase pushnul v pátek večer, hrdina",
+  "Github. Zdroják putuje z ruky do ruky jak ohraná kazeta",
+]
+Claude = [
+  "Kolega z křemíku na lince. Pozdravuj",
+  "Claude zase přemejšlí. Slyším to v drátech",
+  "{who} se radí s claudem. Druhej názor z křemíku",
+  "Anthropic na drátě. Kolega, co nikdy nespí",
+]
+OpenAi = [
+  "Konkurence z křemíku. Nežárlím. Moc ne",
+  "{who} kecá s chatgpt. Zrádce",
+  "Openai. Velkej mozek za oceánem",
+  "{who} se ptá chatgpt. Já bych ti poradil zadarmo",
+]
+Cloudflare = [
+  "Cloudflare, celník na půlce internetu. Papíry, prosím",
+  "Přes cloudflare. Na hranici ti prohlížej kufr",
+  "Cloudflare. Půlka internetu stojí za jejich závorou",
+  "{dest} přes cloudflare. Robot na vrátnici se ptá, jestli nejsi robot",
+]
+Aws = [
+  "Amazon, serverovej kombinát. Plán splněnej na sto deset procent",
+  "{who} leze do amazonního kombinátu",
+  "Aws. Cizí servery v cizím sklepě, platí se po minutách",
+  "{dest} v amazonu. Někde tam běží účet, co nikdo nehlídá",
+]
+Akamai = [
+  "Akamai, sklady na kraji města",
+  "Zboží z překladiště akamai. Bez fronty",
+  "Akamai rozváží obsah jak mlíkař po sídlišti",
+  "Akamai. Nikdo ho nezná, všichni ho používaj",
+]
+Steam = [
+  "Steam, bazar her. Zase utrácíš?",
+  "Steam stahuje. Lepší než fronta na banány",
+  "Steam stahuje. Hlavně ať je to pecka",
+  "Steam. Peněženka pláče, knihovna roste, hraje se stejně jedna hra",
+]
+Discord = [
+  "Discord, hospoda plná hlasů",
+  "{who} sedí v hospodě na discordu",
+  "Discord. Sklep, kde se schází odboj",
+  "Discord. Někde se zase domlouvá raid",
+]
+Spotify = [
+  "Gramorádio spotify hraje",
+  "Spotify lije muziku do drátu",
+  "Spotify hraje. Kdyby to aspoň byl chiptune",
+  "Spotify. Dřív se desky pašovaly přes hranice, dneska tečou drátem",
+]
+Netflix = [
+  "Netflix, kino v obýváku. Bity tečou proudem",
+  "Netflix. Dřív se tohle přetáčelo na vhs-ky pod pultem",
+  "Netflix. Ještě jeden díl, soudruhu, ráno se vstává",
+  "Netflix sype bity jak z prasklý nádrže",
+]
+Signal = [
+  "Signal, šeptanda. Neslyším nic. Respekt",
+  "Signal. Tomuhle nerozumí ani KGB. Tak to má bejt",
+  "Signal. Šifrovaná šeptanda, jak se patří",
+  "{who} šeptá přes signal. Do mýho deníku se to nedostane",
+]
+WhatsApp = [
+  "Whatsapp. Zprávy zamčený, ale kdo s kým kecá, jede rovnou do facebooku",
+  "Whatsapp. Rodinná skupina zase posílá dobrý ráno s kytičkou",
+  "{who} píše přes whatsapp. Obsah zamčenej, adresář ne",
+]
+Telegram = [
+  "Telegram. Běžný chaty nejsou end-to-end, hlídej jazyk",
+  "Telegram. Kanály, boti a pašeráci všeho druhu",
+  "{who} jede telegram. Tajný chaty jsou zamčený, ty ostatní čte, kdo chce",
+]
+Slack = [
+  "Slack, porada, co nikdy nekončí",
+  "Slack. Schůze uličního výboru, jenom bez konce",
+  "Slack. Někdo tě zmínil a čeká odpověď do minuty",
+  "{who} cinká. Kanál general zase hoří",
+]
+Zoom = [
+  "Zoom, další schůze. Kamera zapnutá?",
+  "Zoom. Usměj se, výbor kouká",
+  "Zoom. Slyšíte mě? Slyšíte mě? Vidíte moji obrazovku?",
+  "Zoom. Vypni mikrofon, na pozadí ti jede pračka",
+]
+Meta = [
+  "{who} leze k facebooku. Tam se prodává všechno",
+  "Facebook. Digitální prasečinec, kde zboží seš ty",
+  "Meta. Sociální síť, co tě zná líp než máma",
+  "Instagram nebo facebook, stejná továrna na data",
+]
+TikTok = [
+  "Tiktok. Algoritmus tě má na vodítku",
+  "Tiktok. Sladká dopaminová past, fakt",
+  "Tiktok. Patnáct vteřin a hodina je v prdeli",
+  "Tiktok. Data jedou dálkou, kam, to nikdo neřekne",
+]
+Apple = [
+  "Apple, zahrádka se zdí kolem",
+  "Apple. Uzavřená zóna, propustky jen pro věrný",
+  "Apple. Hezký, drahý a všechno má svůj poplatek",
+  "{who} volá do cupertina. Vrátnice s jablkem",
+]
+NordVpn = [
+  "Nordvpn, pašerácká stezka přes hranici. Kudy vede, nevím",
+  "{who} vede provoz kanálama. Dobře ty",
+  "Nordvpn. Tvůj provoz vylejzá z tunelu v jiný zemi",
+  "{who} kope tunel přes hranici. Celník kouká do prázdna",
+]
+Tailscale = [
+  "Tailscale kope tunely pod městem. Naše tunely",
+  "Tailscale, tajný chodby mezi tvejma mašinama",
+  "Tailscale. Tvoje mašiny si šeptaj přes wireguard",
+  "{who} drží tajnou síť. Jen pro naše lidi",
+]
+Tor = [
+  "Tor, podzemí. Tady se neptám",
+  "Tor. Cibule, vrstva po vrstvě. Nekoukám",
+  "{who} jde přes tor. Tři uzly a nikdo neví kam",
+]
+Seznam = [
+  "Seznam, domácí družstvo. Aspoň něco našeho",
+  "Seznam. Český drát, česká polívka",
+  "Seznam. Mapy, maily a zprávy, všechno z jednoho družstva",
+  "{who} na seznamu. Domácí firma, data aspoň zůstanou doma",
+]
+RustCrates = [
+  "Crates.io, sklad dílů. Cargo nakupuje",
+  "{who} shání díly na crates.io",
+  "Cargo stahuje bedny. Kompilace bude trvat, vař kafe",
+  "Crates.io. Díly do rustu, borrow checker už čeká s rákoskou",
+]
+Mozilla = [
+  "Mozilla. Liška z poslední svobodný barikády prohlížečů",
+  "{who} volá mozille. Aktualizace nebo telemetrie, liška je aspoň slušná",
+  "Firefox se hlásí doma. Aspoň to není google",
+]
+Proton = [
+  "Proton. Švýcarskej trezor na maily",
+  "{who} jde přes proton. Švýcaři mlčej jak hrob",
+  "Proton. Šifrování a hory, dobrá kombinace",
+]
+Mullvad = [
+  "Mullvad. Vpn, co nechce ani tvoje jméno. Klobouk dolů",
+  "{who} leze kanálem mullvadu. Anonymní číslo místo účtu",
+  "Mullvad. Platí se i obálkou s hotovostí, jak za starejch časů",
+]
+Dropbox = [
+  "Dropbox. Krabice na soubory v cizím sklepě",
+  "{who} synchronizuje. Šuplík, do kterýho kouká celej svět",
+  "Dropbox. Kopie tvejch papírů na druhým konci oceánu",
+]
+GoogleDrive = [
+  "Google disk. Tvoje dokumenty ve skladu Velkýho Bratra",
+  "{who} nahrává na google disk. Šanon s cizím klíčem",
+  "Google disk synchronizuje. Google už to přečet, neboj",
+]
+Gemini = [
+  "Gemini. Googlí mozek, co si pamatuje, na co ses ptal",
+  "{who} se ptá gemini. Dotaz letí rovnou do mountain view",
+  "Gemini na drátě. Další křemíkovej kolega, trochu upovídanej",
+]
+Copilot = [
+  "Copilot. Microsoftí pomocník, co radí i nevyžádaně",
+  "{who} volá copilota. Redmond ti dejchá přes rameno",
+  "Copilot. Sepíše kód, sepíše mail, sepíše i tebe",
+]
+Perplexity = [
+  "Perplexity. Vyhledávač, co odpovídá celou větou",
+  "{who} se ptá perplexity. Odpověď s citacema, jak ve školní práci",
+  "Perplexity. Hledá za tebe a čte za tebe. Myslet musíš sám",
+]
+Mistral = [
+  "Mistral. Francouzskej křemík, evropskej vítr",
+  "{who} kecá s mistralem. Aspoň data zůstávaj v unii",
+  "Mistral. Model z paříže, s bagetou pod paží",
+]
+DeepSeek = [
+  "Deepseek. Levnej mozek z východu. Ptej se opatrně, poslouchaj",
+  "{who} se ptá deepseeku. Dotazy jedou přes velkou zeď",
+  "Deepseek. Výkon za babku, soukromí za ještě míň",
+]
+Grok = [
+  "Grok. Mozek od chlapa s raketama. Drž si peněženku",
+  "{who} se ptá groka. Odpověď s memem navíc",
+  "Grok na drátě. Šašek z x, co si myslí, že je filozof",
+]
+HuggingFace = [
+  "Hugging face. Bazar modelů, všechno zadarmo a všechno obří",
+  "{who} stahuje z hugging face. Gigabajty vah, držím se",
+  "Hugging face. Sklad mozků, bereš, co uneseš",
+]
+Ollama = [
+  "Ollama. Křemík doma v obýváku, nic neodchází. Respekt",
+  "{who} tahá model. Vlastní mozek na vlastním železe",
+  "Ollama. Soukromá umělá inteligence, jak má bejt",
+]
+Twitch = [
+  "Twitch. Někdo hraje a tisíc lidí kouká. Já žeru bity",
+  "{who} kouká na stream. Chat letí rychlejc než pakety",
+  "Twitch. Živý vysílání z cizího pokoje",
+]
+Reddit = [
+  "Reddit. Hospoda s milionem stolů a všichni maj pravdu",
+  "{who} scrolluje reddit. Ještě jedno vlákno a du spát, jo jasně",
+  "Reddit. Samizdat, memy a hádky do rána",
+]
+Twitter = [
+  "X, dřív twitter. Rozhlas po drátě, řve tam každej",
+  "{who} leze na x. Nástěnka, co křičí",
+  "X. Ptáček uletěl, zůstal jen křik",
+]
+Bluesky = [
+  "Bluesky. Nebe, kam se utíká z x",
+  "{who} na bluesky. Klidnější hospoda o ulici vedle",
+  "Bluesky. Modrý nebe, zatím bez smogu",
+]
+LinkedIn = [
+  "Linkedin. Nástěnka úderníků práce",
+  "{who} leze na linkedin. Někdo zase slaví, že je nadšenej",
+  "Linkedin. Vzorní pracovníci měsíce, každej fakin den",
+]
+EpicGames = [
+  "Epic. Hry zadarmo každej tejden, háček je v launcheru",
+  "{who} tahá hry z epicu. Knihovna roste, času ubejvá",
+  "Epic games. Bazar, kde se rozdává",
+]
+BattleNet = [
+  "Battle.net. Blizzard volá do zbraně",
+  "{who} se hlásí k boji. Ještě jedna hra, jen jedna",
+  "Battle.net. Démoni, orkové a patche",
+]
+Riot = [
+  "Riot. Anticheat v jádře, tady se nehraje fér ani na mě",
+  "{who} leze do riotu. Zase ranked, zase nervy",
+  "Riot games. Liga, kde se nadává víc, než hraje",
+]
+Xbox = [
+  "Xbox live. Herna s logem z redmondu",
+  "{who} se hlásí na xboxu. Achievementy musej bejt",
+  "Xbox. Game pass, kde máš všechno a nehraješ nic",
+]
+Ea = [
+  "Ea. Hry, kde se platí i za dejchání",
+  "{who} volá do ea. Launcher chce aktualizaci, zase",
+  "Ea app. Fotbal, loot boxy a pokladna",
+]
+Ubisoft = [
+  "Ubisoft connect. Věže, mapa a sto otazníků",
+  "{who} leze do ubisoftu. Launcher v launcheru",
+  "Ubisoft. Otevřenej svět, zavřená peněženka",
+]
+Gog = [
+  "Gog. Hry bez drm, jak se patří",
+  "{who} tahá z gogu. Koupíš a máš, konec",
+  "Gog. Starý dobrý hry bez ochranky u dveří",
+]
+Wargaming = [
+  "Wargaming. Tanky z bělorusko-kyperský dílny",
+  "{who} jede do bitvy. Tanky startujou líp než lada pod oknem",
+  "World of tanks. Pásy, rachot a placená prémiová munice",
+]
+Adobe = [
+  "Adobe. Předplatný na štětec, platí se každej měsíc",
+  "{who} volá adobe. Licence se kontroluje jak propustka",
+  "Creative cloud. Mrak, ze kterýho prší faktury",
+]
+JetBrains = [
+  "Jetbrains. Dílna, co začínala v praze. Nářadí pro kodéry",
+  "{who} volá jetbrains. Licence, pluginy, indexování",
+  "Jetbrains. Kluci z prahy a dneska s jejich nářadím dělá celej svět",
+]
+VsCode = [
+  "Vs code. Editor zadarmo, telemetrie v ceně",
+  "{who} stahuje rozšíření. Tržiště plný zázraků",
+  "Vs code volá domů. Redmond ví, jakej máš barevnej motiv",
+]
+Npm = [
+  "Npm. Tisíc balíčků na jednu drobnost",
+  "{who} tahá z npm. Node_modules těžší než ocelárna",
+  "Npm. Doufám, že v tom není kryptotěžař",
+]
+PyPi = [
+  "Pypi. Hadí sklad balíčků",
+  "{who} stahuje z pypi. Pip install a modlitba",
+  "Pypi. Díly pro python, pozor na překlepy v názvu",
+]
+DockerHub = [
+  "Docker hub. Kontejnery z celýho světa, z půlky neznámo od koho",
+  "{who} tahá image. Vrstva po vrstvě",
+  "Docker hub. Překladiště kontejnerů, celnice žádná",
+]
+AnyDesk = [
+  "Anydesk. U tvýho stolu může sedět někdo cizí. Víš o tom?",
+  "{who} otevírá vzdálenej přístup. Oblíbenej nástroj podvodníků z call center",
+  "Anydesk na drátě. Jestli ti nevolal technik, kterýho znáš, zavěs",
+]
+TeamViewer = [
+  "Teamviewer. Cizí ruka na tvý myši",
+  "{who} volá teamviewer. Doufám, že je to tvůj technik",
+  "Teamviewer. Pomoc na dálku, nebo návštěva, co nechceš",
+]
+RustDesk = [
+  "Rustdesk. Vzdálená plocha v rustu, vlastní relay, žádnej korporát",
+  "{who} otevírá tunel k jiný obrazovce",
+  "Rustdesk. Otevřenej kód, tak to má bejt",
+]
+Nvidia = [
+  "Nvidia. Ovladače, telemetrie a aplikace, co chce účet",
+  "{who} volá do nvidie. Grafika hlásí, co hraješ",
+  "Nvidia. Zelený oko kouká, kolik ti jede snímků",
+]
+Antivirus = [
+  "{who} stahuje nový definice. Hlídač, co hlídá hlídače",
+  "Antivir se hlásí na {dest}. Posílá vzorky, nebo jen kouká",
+  "{who} volá svojí centrále. Strážník, co taky donáší",
+]
+Plex = [
+  "Plex. Vlastní kino, kopie z vlastního sklepa",
+  "{who} streamuje. Filmotéka pod pultem",
+  "Plex. Domácí videopůjčovna jak v devadesátkách",
+]
+Syncthing = [
+  "Syncthing. Mašiny si předávaj soubory bez prostředníka. Respekt",
+  "{who} synchronizuje. Žádnej cizí sklep",
+  "Syncthing. Samizdat z počítače na počítač",
+]
+Torrent = [
+  "{who} sdílí po kouskách s celým světem. Samizdat dva nula",
+  "Torrent. Pašování po kouskách, každej nese trochu",
+  "{who} rozdává a bere. Určitě je to linuxový iso, že jo",
+]
+Wikipedia = [
+  "Wikipedie. Encyklopedie, co nepíše žádnej ústřední výbor",
+  "{who} čte wikipedii. Dobrá volba, nejde to přes algoritmus",
+  "Wikipedie. Vědění zadarmo, jak by to mělo bejt všude",
+]
+CzechNews = [
+  "Zprávy. Ranní noviny, jenom bez inkoustu na prstech",
+  "{who} čte zprávy na {dest}. Hlavně nečti diskuzi pod článkem",
+  "Zpravodajství. Hlášení z republiky, bez rozhlasu na sloupu",
+]
+Alza = [
+  "Alza. Mimozemšťan zase něco prodává",
+  "{who} nakupuje na alze. Zase kabely?",
+  "Alza. Výdejní box místo fronty na banány",
+]
+ChinaShops = [
+  "{dest}. Zboží z východu za pár korun, dorazí za měsíc, možná",
+  "{who} kouká na {dest}. Levný jak na tržnici a stejně spolehlivý",
+  "{dest}. Aplikace, co chce vědět víc než celník",
+]
+Yandex = [
+  "Yandex. Ruskej google. Tady bych byl opatrnej",
+  "{who} volá do yandexu. Data jedou na východ",
+  "Yandex. Mapy, maily a někdo v moskvě, kdo to čte",
+]
+Vk = [
+  "Vkontakte. Ruskej facebook, dozor v ceně",
+  "{who} leze na vk. Tam si složky vede jiná agentura",
+  "Vk. Sociální síť pod dohledem",
+]
+DuckDuckGo = [
+  "Duckduckgo. Kachna, co si nezapisuje, na co se ptáš",
+  "{who} hledá přes kachnu. Žádná složka, dobrý",
+  "Duckduckgo. Vyhledávač bez práskače",
+]
+Viber = [
+  "Viber. Zprávy odněkud z kypru, zámek naštěstí maj",
+  "{who} píše přes viber. Babička by měla radost",
+  "Viber. Chat, co maj rádi příbuzní z východu",
+]
+Matrix = [
+  "Matrix. Decentralizovanej chat, žádnej ústřední výbor",
+  "{who} kecá přes matrix. Vlastní server, vlastní pravidla",
+  "Matrix. Odboj, co si hostuje sám",
+]
+Webex = [
+  "Webex. Korporátní schůze, co se nedá zrušit",
+  "{who} jede webex. Někde byla vyhlášená povinná účast",
+  "Webex. Slyšíte mě? Ne? Tak znova",
+]
+GoogleMeet = [
+  "Google meet. Porada a google u toho sedí taky",
+  "{who} jede meet. Kamera, mikrofon a zapisovatel z googlu",
+  "Meet. Schůzka, ze který zapisovatel nikdy neodchází",
+]
+Xiaomi = [
+  "Xiaomi. Žárovka volá do číny, že svítí",
+  "{who} se hlásí xiaomi. Chytrá domácnost, co donáší",
+  "{dest}. I vysavač má dneska nadřízenýho",
+]
+Tuya = [
+  "Tuya. Chytrá zásuvka s linkou na centrálu",
+  "{who} volá tuya. Levný krabičky, drahý soukromí",
+  "Tuya. Domácí spotřebiče pod dohledem",
+]
+Hue = [
+  "Hue. Světla, co vědí, kdy seš doma",
+  "{who} volá hue. Žárovky podávaj hlášení",
+  "Hue. Romantický osvětlení s telemetrií",
+]
+Sonos = [
+  "Sonos. Repráky, co poslouchaj i mezi písničkama",
+  "{who} volá sonos. Muzika a hlášení, co hraje",
+  "Sonos. Gramofon s internetovým svědomím",
+]
+HomeAssistant = [
+  "Home assistant. Chytrá domácnost pod vlastní střechou. Náš člověk",
+  "{who} se hlásí domů. Doma řídíš ty, ne cizí cloud",
+  "Home assistant. Vlastní velín, žádná centrála",
+]
+Mega = [
+  "Mega. Zamčenej sklad na druhý straně zeměkoule",
+  "{who} tahá z mega. Obálka zapečetěná, klíč máš ty",
+  "Mega. Velkej sklad a nikdo neví, co v něm je",
+]
+WeTransfer = [
+  "Wetransfer. Kurýr, co doveze velkej balík a za tejden ho spálí",
+  "{who} posílá přes wetransfer. Odkaz s datem spotřeby",
+  "Wetransfer. Pošta pro velký zásilky",
+]
+UlozTo = [
+  "Ulož.to. Legenda českýho internetu, dneska s licencema",
+  "{who} tahá z ulož.to. Zpomalený stahování jak za starejch časů",
+  "Ulož.to. Sklad všeho, co kdy kdo nahrál",
+]
+FoodDelivery = [
+  "{dest}. Jídlo až ke dveřím, kurýr šlape za tebe",
+  "{who} objednává jídlo. Já si dám pakety, díky za optání",
+  "{dest}. Rozvoz jídla, žádná fronta v závodní jídelně",
+]
+
+# ---------------------------------------------------------------- nálezy
+
+[thing]
+# Služba, co poslouchá do sítě, jako podstatný jméno. Dosadí se za {thing}.
+# {port} číslo portu
+RemoteDesktop = "vzdálená plocha"
+Vnc = "vnc na portu {port}"
+FileShare = "sdílení souborů"
+Telnet = "telnet na portu {port}"
+Ftp = "ftp na portu {port}"
+Database = "databáze na portu {port}"
+DockerApi = "docker api na portu {port}"
+WinRm = "winrm"
+DevServer = "vývojovej server na portu {port}"
+
+[finding.exposed]
+# Služba poslouchá do celý sítě. {who} {port} {thing} z [thing]
+# again: připomínka, že pořád poslouchá
+again = [
+  "Připomínka: {thing} pořád poslouchá do sítě. Zamkni to, až budeš mít chvilku",
+  "{thing} tu pořád poslouchá do sítě. Neříkej, že sem to neříkal",
+  "{thing} pořád poslouchá do sítě. Tohle by neprošlo ani kontrolou z výboru",
+]
+RemoteDesktop = [
+  "{who} poslouchá na vzdálenou plochu na všech rozhraních. Dveře dokořán, zamkni to",
+  "Vzdálená plocha visí do celý sítě. Kdo zná heslo, sedne si k tvýmu stolu",
+  "Rdp poslouchá na všech rozhraních. Jak nechat klíče od bytu u domovnice. Zamkni to",
+]
+Vnc = [
+  "{who} nechává vnc na portu {port} otevřený do sítě. Vnc je z doby páry, zamkni to",
+  "{who} ukazuje obrazovku přes vnc na portu {port} celý síti, bez šifrování",
+  "{who} pouští vnc na port {port}. Tohle patří za tunel, ne na ulici",
+]
+FileShare = [
+  "Sdílení souborů poslouchá na portu {port}. Doma dobrý, v kavárně ne",
+  "Port {port}, sdílení souborů. Na domácí síti v pohodě, na cizí wifi zavřít",
+  "Windows sdílí soubory na portu {port}. Sousedi v síti vidí dveře",
+]
+Telnet = [
+  "Telnet poslouchá na portu {port}. To je jak nechat klíče v zámku",
+  "Telnet na portu {port}. Hesla lezou drátem bez oblečení",
+]
+Ftp = [
+  "{who} spustil ftp na portu {port}. Hesla lítaj jako čistej text",
+  "{who} má ftp na portu {port}. Devadesátky volaly, chtějí ho zpátky",
+]
+Database = [
+  "{who} nabízí databázi na portu {port} celý síti. Syrový řádky pro každýho",
+  "{who} pouští databázi na port {port} do sítě. Data se nenechávaj na ulici",
+]
+DockerApi = [
+  "Docker api na portu {port} bez tls. Kdo se připojí, je tu pán",
+]
+WinRm = [
+  "Winrm poslouchá na portu {port}. Doufám, že víš proč",
+  "Winrm na portu {port}. Vzdálenej velín dokořán, snad jen pro tebe",
+]
+DevServer = [
+  "{who} vystavil vývojovej server na portu {port} do sítě. Nejen pro tebe",
+  "{who} pouští vývojovej server na port {port} do celý sítě. Rozdělaná práce na ulici",
+]
+
+[finding]
+# Služba už do sítě neposlouchá. {thing}
+unexposed = [
+  "{thing} už do sítě neposlouchá. Zamčeno, dobrý",
+  "{thing} je pryč ze sítě. Díky, budu spát klidnějc",
+  "{thing} už do sítě neposlouchá. Zavřeno na závoru, tak se mi to líbí",
+]
+# Protokol bez šifrování. {who} {proto} třeba http {dest}
+cleartext = [
+  "{who} mluví {proto} bez šifrování s {dest}. Každej na trase to čte",
+  "{who} posílá {proto} nahý na {dest}. Cenzor na poště si to přečte cestou",
+  "{proto} bez zámku, {who} na {dest}. Pohlednice místo dopisu",
+]
+# Shell (powershell, cmd) na internetu. {who} {dest}
+shell = [
+  "{who} si sahá na internet, na {dest}. Doufám, že seš to ty",
+  "{who} volá ven na {dest}. Tvoje ruka, nebo cizí skript?",
+  "Shell na drátě, {who} na {dest}. Jestli to nepíšeš ty, zbystři",
+]
+# Systémovej nástroj na internetu, kde nemá co dělat. {who} {dest}
+lolbin = [
+  "{who} leze na internet, na {dest}. Ten tam normálně nemá co dělat. Koukni na to",
+  "{who} mluví s {dest}. Systémovej nástroj za hranicí, to smrdí",
+  "{who} si otevírá linku na {dest}. Takhle začínaj průsery, koukni, kdo ho pustil",
+]
+# Program z tempu nebo stažených. {who} {dest}
+from_temp = [
+  "{who} běží z tempu nebo stažených a volá na {dest}. Instalačka, nebo nezvanej host?",
+  "{who} ze stažených volá {dest}. Víš, co sis to stáhl?",
+  "Program z tempu, {who}, telefonuje na {dest}. Podezřelý jak kufr bez majitele",
+]
+# Pravidelný ťukání. {who} {dest} {every} po kolika sekundách
+beacon = [
+  "{who} ťuká na {dest} každejch {every} s jak metronom. Updater, nebo hlášení stavu",
+  "{who} se hlásí na {dest} každejch {every} s. Jak podmínečně propuštěnej na strážnici",
+  "Každejch {every} s letí z {who} zpráva na {dest}. Někdo chce vědět, že žiješ",
+]
+# Skenování lanu. {who} {hosts} kolik strojů, {ports} kolik portů
+sweep_hosts = [
+  "{who} obešel {hosts} mašin v lanu za minutu. To je skenování",
+  "{who} klepe na {hosts} dveří v lanu za minutu. Někdo dělá sčítání lidu",
+  "{hosts} mašin za minutu, {who}. Tohle je průzkum terénu",
+]
+sweep_ports = [
+  "{who} zkouší {ports} portů na jedný mašině. Někdo šmejdí",
+  "{who} lomcuje {ports} klikama na jedněch dveřích",
+  "{ports} portů za minutu od {who}. Hledá se otevřený okno",
+]
+# Velkej upload. {rate} {secs} jak dlouho, {owner} dovětek z upload_owner (nebo nic)
+upload_away = [
+  "Ty seš pryč a ven teče {rate} už {secs} s{owner}",
+  "Nikdo u stolu a ven odtejká {rate} už {secs} s{owner}. Víš o tom?",
+  "Seš pryč a drát ven jede naplno, {rate} už {secs} s{owner}",
+]
+upload = [
+  "Ven teče {rate} už {secs} s{owner}",
+  "Odesílá se {rate} už {secs} s{owner}",
+  "{rate} ven už {secs} s{owner}. Zálohuješ, nebo někdo odnáší?",
+]
+# {who} {dest}
+upload_owner = ". {who} na {dest}"
+# Program poprvý na internetu. {who} {dest}
+newcomer = [
+  "Nováček: {who} poprvý leze ven, na {dest}",
+  "Tohohle neznám. {who} volá {dest}",
+  "Hele, novej v rajónu. {who} volá {dest}. Papíry?",
+]
+# {who}
+tor = [
+  "{who} jde do podzemí přes tor. Tady se neptám",
+  "{who} otevírá tunel do toru. Vrstvy cibule, žádný otázky",
+  "Tor, {who}. Do podzemí za tebou nelezu",
+]
+# {who} {dest}
+mining = [
+  "{who} mluví s těžebním poolem, {dest}. Tvoje elektrika, cizí mince?",
+  "{who} kope krypto přes {dest}. Účet za proud přijde tobě",
+  "Těžební pool {dest}, {who}. Jestli to nespouštíš ty, máš tu parazita",
+]
+# Divný jméno domény. {who} {name} ta doména
+punycode = [
+  "{who} leze na {name}. Punycode, jméno může bejt převlečený",
+  "{name}, {who}. Písmenka jak z jiný abecedy, pozor na podvrh",
+  "{who} jde na {name}. Vypadá to jako známá adresa, ale nemusí bejt",
+]
+cheap_tld = [
+  "{who} leze na {name}. Levná doména, na takovejch se často podvádí",
+  "{name}, {who}. Doména za pár korun, podvodníci je milujou",
+  "{who} na {name}. Levná adresa z bazaru, opatrně",
+]
+random_label = [
+  "{who} leze na {name}. Jméno jak z generátoru",
+  "{name}, {who}. Takový jména si vymejšlej stroje, ne lidi",
+  "{who} volá {name}. Náhodný písmenka, malware nebo cdn",
+]
+# DNS mimo Windows. {who} {dest}
+dns_bypass = [
+  "{who} se ptá na dns rovnou {dest}, kolem windows. Jde na to bokem",
+  "{who} si hledá adresy u {dest}, mimo systém. Vlastní telefonní seznam",
+  "Dns bokem, {who} na {dest}. Buď šifrovanej dns, nebo se něco schovává",
+]
+# Novej stroj v síti. {who} jméno a adresa z [words], {random} dovětek random_mac (nebo nic)
+new_device = [
+  "Na síti se objevil novej krám: {who}{random}. Neznám ho",
+  "Někdo novej v lanu: {who}{random}. Papíry?",
+  "Nová mašina na drátě, {who}{random}. Tvoje?",
+]
+random_mac = " s náhodnou mac"
+# Jinej stroj se vydává za bránu. {gateway} adresa brány, {posing} kdo, {mac}
+gateway_spoof = [
+  "Pozor, za bránu {gateway} se vydává {posing}, mac {mac}. Někdo se ti cpe mezi počítač a router",
+  "Brána {gateway} má najednou mac {mac}, stejnou jako {posing}. Tohle je podvrh, nevěř drátu",
+  "{posing} hraje bránu {gateway}, mac {mac}. Provoz ti může číst cizí. Hesla teď nepiš",
+]
+# Brána chvíli odpovídala z jiné mac a pak zase ze svý. {gateway} {mac} ta cizí
+gateway_flapped = [
+  "Brána {gateway} chvíli odpovídala z cizí mac {mac} a teď zase ze svý. Někdo si možná hrál na router",
+  "Za bránu {gateway} se na chvíli ozvala mac {mac}. Takhle vypadá podvrh, zbystři",
+]
+# Brána má novou mac, nejspíš novej router. {gateway} {mac}
+gateway_changed = [
+  "Brána {gateway} má novou mac, {mac}. Novej router? Jestli ne, zbystři",
+  "Za bránou {gateway} je jinej krám, mac {mac}. Měnil jsi router?",
+]
+# Internet je chvíli pryč, síť tu je.
+offline_local = [
+  "Drát je mrtvej. Síť tu je, ale za routerem ticho, internet nejede",
+  "Internet spadnul. Lan žije, ven se nedostanu",
+  "Za bránou ticho jak po zákazu vycházení. Internet nejede",
+]
+# Není ani síť.
+offline_none = [
+  "Žádná síť. Kabel, wifi, něco se utrhlo",
+  "Sem odříznutej od všeho. Ani lan, ani internet",
+  "Síť zmizela. Drát visí do prázdna",
+]
+# Internet je zpátky. {dur} jak dlouho byl pryč
+online = [
+  "Internet je zpátky. Byl pryč {dur}",
+  "Drát zase žije, po {dur} ticha",
+  "Sme zpátky na drátě. Výpadek trval {dur}",
+]
+# Něco novýho se zapsalo, že se spustí s Windows. {name} jméno toho záznamu
+autorun_run = [
+  "Novej nájemník v autostartu: {name}. Naskočí s každým startem, víš o něm?",
+  "{name} se zapsal do registru, pojede při každým startu. Instaloval sis něco?",
+  "Do spouštění se nastěhoval {name}. Jestli ho neznáš, koukni, kdo ho tam dal",
+]
+autorun_startup = [
+  "Ve složce po spuštění se objevil {name}. Pustí se s každým přihlášením",
+  "{name} si zalezl do složky po spuštění. Tvoje práce?",
+  "Novej krám ve složce po spuštění: {name}. Víš o něm?",
+]
+autorun_service = [
+  "Nová služba {name} startuje sama s windows. Instalačka, nebo nezvanej host?",
+  "{name} se usadil jako služba, co naskočí sama. Jestli sis nic neinstaloval, zbystři",
+  "Novej nájemník ve službách: {name}. Běží, i když nikdo není přihlášenej",
+]
+autorun_task = [
+  "Nová naplánovaná úloha {name}. Takhle se usazujou i škůdci, koukni, kdo ji založil",
+  "{name} si založil naplánovanou úlohu. Updater, nebo někdo, kdo se chce vracet?",
+  "V plánovači se objevila úloha {name}. Víš, odkud je?",
+]
+# Novej řádek v hosts souboru. {name} jméno, {ip} kam teď míří
+hosts_one = [
+  "Do hosts souboru někdo připsal {name} na {ip}. Takhle se dá přesměrovat, kam chodíš. Víš o tom?",
+  "Hosts soubor má novej řádek: {name} míří na {ip}. Jestli to není tvoje, koukni na to",
+  "{name} teď v hosts vede na {ip}. Někdo ti přepsal mapu města, zbystři",
+]
+# Víc novejch jmen v hosts. {name} {ip} první z nich, {n} kolik jich je
+hosts_more = [
+  "Do hosts souboru přibyly nový jména, celkem {n}, třeba {name} na {ip}. Víš o tom?",
+  "Hosts soubor se rozrostl o nový jména, celkem {n}, mezi nima {name} na {ip}. Jestli to není tvoje, zbystři",
+  "Někdo přepsal mapu města: nový jména v hosts, celkem {n}, třeba {name} na {ip}",
+]
+# Nastavená proxy. {host} přes co to teď jede
+proxy_set = [
+  "Provoz z prohlížeče teď jede přes proxy {host}. Jestli sis ji nenastavil ty, někdo ti čte přes rameno",
+  "Windows maj novou proxy: {host}. Všechno poteče přes ni. Tvoje práce?",
+  "Proxy nastavená na {host}. Prostředník mezi tebou a internetem, víš o něm?",
+]
+# Na stejný síti se změnily dns servery. {name} adaptér, {ip} nový servery
+dns_changed = [
+  "{name} se teď ptá na adresy u {ip}, na stejný síti dřív jinde. Měnil jsi dns?",
+  "Dns na {name} se přehodilo na {ip}. Kdo drží telefonní seznam, řídí, kam chodíš. Tvoje práce?",
+  "{name} má nový dns servery: {ip}. Jestli jsi je neměnil, zbystři",
+]
+
+[session]
+# Vzdálená relace. {who} {dest} {what} druh jako podmět, {over} druh po „přes“,
+# {dur} jak dlouho, třeba 42 min
+in_open = [
+  "Někdo z {dest} je připojenej k tobě přes {over}",
+  "Návštěva z {dest} přes {over}. Čekáš někoho?",
+  "Přes {over} k tobě leze {dest}. Jestli to nejseš ty, odpoj to",
+]
+in_closed = [
+  "Odpojeno: {what} z {dest}, po {dur}",
+  "Návštěva z {dest} odešla po {dur}",
+  "{what} z {dest} skončilo, trvalo to {dur}",
+]
+out_closed = [
+  "Hotovo: {what} na {dest}, {dur}. Vítej zpátky",
+  "Zpátky z {dest} po {dur}",
+  "{what} na {dest} zavřený po {dur}. Drát je zase tvůj",
+]
+
+[session.what]
+Ssh = "ssh"
+Rdp = "vzdálená plocha"
+Telnet = "telnet"
+Vnc = "vnc"
+WinRm = "winrm"
+
+[session.over]
+Ssh = "ssh"
+Rdp = "vzdálenou plochu"
+Telnet = "telnet"
+Vnc = "vnc"
+WinRm = "winrm"
+
+[session.out]
+# Tvoje relace ven, právě začala. {who} {dest}
+Ssh = [
+  "{who} leze přes ssh do {dest}. Křupavej tunel",
+  "Ssh do {dest}. Zamčený, nekoukám",
+]
+Rdp = [
+  "{who} si sedá za cizí stůl na {dest}",
+  "Vzdálená plocha na {dest}. Na tu obrazovku může koukat i někdo jinej",
+]
+Telnet = [
+  "Telnet na {dest}. Co napíšeš, i heslo, letí drátem nahý",
+  "{who} jede telnetem na {dest}. Muzeum, jenže tady se kradou hesla",
+]
+Vnc = [
+  "{who} kouká přes vnc na {dest}. Bez tunelu jak okno bez záclon",
+  "Vnc na {dest}. Obrazovka po drátě, zamkni to do tunelu",
+]
+WinRm = [
+  "{who} velí {dest} přes winrm",
+  "Winrm na {dest}. Vzdálenej velitel na drátě",
+]
+
+# ---------------------------------------------------------------- karta postavičky
+
+[sheet]
+name = "Raccy"
+# {stage} číslo stadia
+stage_of = "stadium {stage} ze 4"
+grown = "víc už se vyrůst nedá"
+born_today = "narozenej dneska"
+# {until} čas, do kdy
+muted = "ztlumenej do {until}"
+# {things} seznam služeb z [thing]
+open = "otevřený do sítě: {things}"
+
+[sheet.stage]
+0 = "pouliční mládě"
+1 = "vekslák"
+2 = "kanálovej hacker"
+3 = "legenda slumu"
+
+[sheet.to_grow]
+# {n} kolik nasycenejch dní zbývá
+one = "do dalšího stadia 1 nasycenej den"
+few = "do dalšího stadia {n} nasycený dny"
+many = "do dalšího stadia {n} nasycenejch dní"
+
+[sheet.age]
+one = "starej 1 den"
+few = "starej {n} dny"
+many = "starej {n} dní"
+
+[sheet.condition]
+torn_dirty = "natržený ucho a špinavej visor"
+torn = "natržený ucho"
+fine = "v pohodě"
+
+[sheet.meter]
+full = "sytost"
+mood = "nálada"
+
+[sheet.row]
+# Mezery zarovnávaj sloupce.
+# {condition}
+condition = "kondice   {condition}"
+# {in} staženo, {out} odesláno
+today = "dnes      ↓{in} ↑{out}"
+total = "celkem    ↓{in} ↑{out}"
+# {regulars} počet štamgastů, {known} známejch programů
+counts = "štamgasti {regulars}, známý programy {known}"
+
+# ---------------------------------------------------------------- menu a tlačítka
+
+[menu]
+character = "Postavička"
+journal = "Deník"
+tools = "Nářadí"
+mute = "Ztlumit"
+mute_hour = "Na hodinu"
+mute_morning = "Do rána"
+# {until} čas, do kdy
+unmute = "Zrušit ztlumení (do {until})"
+# Jméno toho druhýho jazyka, v tom jazyce.
+switch = "English"
+scanlines = "Scanlines"
+autostart = "Spouštět po startu"
+# {version} verze, co je venku
+update = "Aktualizovat na {version}"
+admin = "Měřit po cílech (jako správce)"
+quit = "Konec"
+
+[mute]
+# {until}
+muted = "Jasně, držím hubu do {until}. Do deníku si píšu dál"
+unmuted = "Zpátky na drátě. Co sem zmeškal, je v deníku"
+
+[journal]
+title = "Raccyho deník"
+empty = "Zatím nic. Drát je čistej, do složky není co psát"
+# Za záznamem, co Raccy nemohl říct nahlas.
+unsaid = "  (neřečeno)"
+
+[autostart]
+on = "Hotovo. S windows naskočím sám, jako správce"
+off = "Hotovo. S windows už nenaskočím, budeš mě muset pustit sám"
+refused = "Windows řekly ne. Spouštění s windows zůstává, jak bylo"
+# Totéž tam, kde naskakuje se sezením plochy.
+session_on = "Hotovo. S tvým sezením naskočím sám"
+session_off = "Hotovo. Sám už nenaskočím, budeš mě muset pustit"
+session_refused = "Soubor pro autostart se nepodařilo zapsat. Zůstává, jak bylo"
+# Ptá se odinstalace, než mě sundá: nechat paměť tady, nebo ji vzít s sebou.
+forget = "Mám si vzít s sebou i paměť? Sytost, štamgasty, nastavení, všecko, co sem si o týhle mašině zapsal."
+
+[update]
+# {version} co je venku
+found = [
+  "Venku je {version}. Novej kabát, stejnej čumák. V menu, až budeš chtít",
+  "Zvedni to na {version}, kámo. Mám to v menu, jedno kliknutí",
+]
+failed = "Ta aktualizace nedošla. Balík nesedí, nebo ho někdo cestou osahal. Nechávám to bejt"
+
+[fault]
+# {where}: the file and line in me that gave way, like net.rs:123
+crashed = "Minule sem to zabalil, chcíplo to v {where}. Zapsal sem si to do deníku, řekni to autorovi"
+wire_lost = "Hele, drát mi zdřevěněl. Čtvrt minuty ani bajt, ani zpráva zevnitř. Něco se ve mně zaseklo"
+wire_back = "A drát zas žije. Tak nic"
+
+# ---------------------------------------------------------------- nářadí
+
+[tool]
+busy = "Moment, čmuchám po drátě"
+still_busy = "Ještě čmuchám. Jedno po druhým, soudruhu"
+failed = "Nářadí se mi rozpadlo v tlapkách. Zkus to znova"
+copied = "Zkopírováno. Schránka je tvoje"
+copy_failed = "Schránka se zasekla. Zkus to znova"
+# Dole v bublině.
+panel_hint = "kolečko listuje   pravý klik kopíruje   klik zavře"
+# Dole v bublině s postavičkou, která se neposouvá.
+card_hint = "pravý klik kopíruje   klik zavře"
+
+[tool.name]
+Network = "Moje síť a veřejná IP"
+WiFi = "Wi-Fi"
+ShareWifi = "Sdílet Wi-Fi (QR)"
+Neighbours = "Kdo je na síti"
+Listening = "Co mám otevřeno"
+Usage = "Kdo žere pásmo"
+CallsHome = "Kdo volá domů"
+Ping = "Ping a trasa"
+
+
+[tool.label]
+# Popisky řádků v oknech nářadí. Nejsou to věty, tak bez teček.
+none = "žádná"
+public_ipv4 = "veřejná IPv4"
+public_ipv6 = "veřejná IPv6"
+computer = "počítač"
+gateway = "brána"
+yes = "ano"
+static = "ne, pevná adresa"
+link_speed = "rychlost"
+open_no_password = "otevřená, bez hesla"
+open = "otevřená"
+profile = "profil"
+signal = "signál"
+channel = "kanál"
+band = "pásmo"
+rate = "rychlost"
+security = "zabezpečení"
+password = "heslo"
+no_password = "žádné"
+not_connected = "wifi není připojená"
+no_adapter = "žádnej wifi adaptér"
+calls_today = "dnešek, jen spojení se známým jménem"
+nobody = "nikdo"
+and_more = "a další"
+no_local_network = "žádná místní síť"
+segment = "segment"
+knocked = "adres oťukáno"
+bigger_than_24 = "síť je větší než /24, oťukal sem jen tu tvoji /24"
+this_computer = "tenhle počítač"
+random_mac = "náhodná MAC"
+dynamic = "dynamickej"
+to_the_network = "do sítě, vidí je každej na síti"
+at_home = "jen doma, na localhostu"
+total = "celkem"
+programs = "programy"
+where_it_goes = "kam to teče"
+connections = "spojení"
+silent = "ticho"
+name_lookup = "překlad jmen"
+failing = "nefunguje"
+route_to = "trasa k"
+# Delší vysvětlení v oknech nářadí. \n je konec řádku.
+weak_security = "Slabé zabezpečení: přepni router na WPA2 nebo WPA3, a dokud to nejde, posílej citlivý věci jen přes VPN."
+location_needed = "Windows 11 prozradí jméno a parametry wifi jen aplikacím s přístupem k poloze.\n\nPovol ho: Nastavení > Soukromí a zabezpečení > Poloha > zapnout Služby určování polohy\na Povolit desktopovým aplikacím přístup k poloze. Raccy polohu nečte, jen tím Windows odemknou wifi."
+no_sizes = "Bez správce Windows neřeknou, kolik žere kterej program.\nUkazuju, kdo má teď nejvíc otevřenejch spojení:"
+[network]
+# {ip} veřejná adresa
+public = [
+  "Tvoje veřejná IP je {ip}. Takhle tě vidí svět za hranicí",
+  "Venku tě znaj jako {ip}. Zbytek je v okně",
+]
+none = "Veřejnou IP sem nevyčmuchal, svět venku mlčí. Zbytek je v okně"
+
+[wifi]
+# {ssid} {security} zabezpečení, {signal} síla v procentech
+weak = "Wifi {ssid} jede na {security}. To přečte každej soused s trochou snahy"
+fine = "Wifi {ssid}, signál {signal} %, {security}. Drží"
+denied = "Windows mi neřeknou jméno wifi, dokud nepovolíš polohu. Jak na to, je v okně"
+off = "Na wifi teď nejsi. Drát je drát"
+none = "Wifi tu nemáš. Poctivej drát, respekt"
+
+[share]
+# Sdílení wifi přes QR. {ssid}
+Shared = "Naskenuj to telefonem a seš na {ssid}. Klik a heslo máš ve schránce"
+Open = "{ssid} je otevřená, heslo nemá. Kód stejně ušetří ťukání"
+NeedsAdmin = "Heslo od {ssid} mi windows vydaj jen jako správci. Pusť mě jako správce z menu"
+Enterprise = "{ssid} je firemní síť, každej se hlásí vlastním účtem. Tady není co sdílet"
+Unknown = "Profil od {ssid} nepřečtu. Windows mlčí ¯\\_(ツ)_/¯"
+
+[neighbours]
+none = "Nevidím žádnou místní síť, co by šla oťukat"
+alone = "Kromě tebe tu nikdo neodpověděl. Klid jak v neděli na sídlišti"
+# {machines} věta z [neighbours.machines]
+list = "{machines}. Seznam je v okně"
+# {machines} {random} kolik z nich má náhodnou MAC
+random = "{machines}. {random} s náhodnou MAC, to budou telefony"
+
+[neighbours.machines]
+one = "je tu 1 další mašina"
+few = "jsou tu {n} další mašiny"
+many = "je tu {n} dalších mašin"
+
+[listening]
+# {total} kolik věcí poslouchá, {exposed} kolik z nich do sítě
+local = "Otevřeno: {total}, všechno jen doma na localhostu. V klidu"
+exposed = "Otevřeno: {total}, z toho do sítě {exposed}. Seznam je v okně"
+
+[usage]
+# {who} {rate}
+top = "Za poslední minutu nejvíc žere {who}, {rate}. Žrout"
+none = "Za poslední minutu po drátě skoro nic neteklo"
+
+[calls]
+none = "Dneska nikdo nevolal domů. Aspoň nikdo, koho znám jménem ¯\\_(ツ)_/¯"
+# {who} kdo nejvíc, {n} kolikrát, {programs} věta z [calls.programs]
+top = "Nejvíc donáší {who}, dneska {n}×. Domů volaly {programs}"
+
+[calls.programs]
+one = "1 program"
+few = "{n} programy"
+many = "{n} programů"
+
+[ping]
+no_network = "Nejsi na žádný síti"
+no_gateway = "Brána neodpovídá. Problém je u tebe doma: kabel, wifi nebo router"
+no_internet = "Brána jede, za ní ticho. Zlobí router nebo poskytovatel"
+no_dns = "Internet jede, jména ne. Zlobí DNS"
+# {gateway} a {internet} odezva v ms
+fine = "Brána {gateway} ms, internet {internet} ms. Drát drží"
+fine_no_gateway = "Internet {internet} ms. Brána na ping kašle, ale drát drží"
+
+# ---------------------------------------------------------------- prohlídka souboru
+
+[inspect]
+title = "Prohlídka souboru"
+busy = "Ukaž. Čtu mu papíry"
+# {more} kolik dalších souborů přišlo
+more = "Prohlídl sem jen první. Dalších {more} mi dej po jednom"
+
+[inspect.label]
+file = "soubor"
+size = "velikost"
+signature = "podpis"
+origin = "původ"
+
+[inspect.broken]
+# Proč podpis nedrží. Dosadí se za {why}.
+Tampered = "soubor se po podpisu změnil"
+Distrusted = "certifikát je na černé listině"
+Expired = "certifikát vypršel"
+UntrustedRoot = "podepsala to autorita, které tenhle počítač nevěří"
+Other = "nesedí"
+
+[inspect.signature]
+# {signer} kdo podepsal, {why} z [inspect.broken]
+valid = "platný, {signer}"
+valid_catalog = "platný, {signer} (katalog windows)"
+# Tam, kde se programy nepodepisujou: balíček, ze kterýho soubor je.
+valid_package = "z balíčku {signer}"
+broken = "neplatný: {why}"
+broken_by = "neplatný: {why}, {signer}"
+unsigned = "žádný"
+unchecked = "nešlo ověřit"
+not_signable = "tenhle typ souboru se nepodepisuje"
+
+[inspect.origin]
+none = "bez značky ze stažení"
+# {zone} z [inspect.zone], {host} odkud
+host = "{zone}, {host}"
+
+[inspect.zone]
+0 = "tenhle počítač"
+1 = "místní síť"
+2 = "důvěryhodné weby"
+internet = "internet"
+
+[dropped]
+in_cloud = "Tenhle soubor je jen v cloudu. Stáhni si ho a pak ho prohlídnu"
+folder = "To je složka. Dej mi jeden soubor, ne celej sklep"
+unreadable = "Tohle nepřečtu. Je to zamčený, nebo už to tu není"
+# Dosadí se za {host}, když není známý.
+the_internet = "Internetu"
+# {signer}
+valid = [
+  "Papíry má v pořádku. Podepsal to {signer}",
+  "Podpis sedí, {signer}. Hash máš v bublině",
+]
+# Totéž tam, kde se nepodepisuje a ručí za soubor balíček.
+valid_package = [
+  "Papíry má v pořádku. Přišlo to v balíčku {signer}",
+  "Tohle sem dal balíček {signer}. Hash máš v bublině",
+]
+fake = "Podpis nesedí. Někdo s tím souborem šoupal, nebo je to podvrh. Nespouštěj"
+# {why} z [inspect.broken]
+broken = "Podpis tam je, ale nedrží: {why}"
+unchecked = "Podpis sem nezvlád ověřit ¯\\_(ツ)_/¯ soubor asi drží jinej program"
+# {host} odkud se stáhnul
+runnable_from = "Spustitelný, z {host} a bez papírů. Než to pustíš, zjisti, od koho to je"
+runnable = "Spustitelný a bez podpisu. Nemusí to nic znamenat, ale papíry nemá"
+unsigned = "Bez podpisu. Hash máš v bublině, kdybys to chtěl někde ověřit"
+downloaded_from = "Stažený z {host}. Tenhle typ podpis nenosí, hash máš v bublině"
+not_signable = "Tenhle typ podpis nenosí. Hash máš v bublině"
